@@ -2,8 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
+.form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
 
-.custom-select{
-  
+.Card {
+  width: 100%;
+  height: 100%;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.form-heading {
+  text-align: center;
+}
+
+.custom-select {
   appearance: none;
+}
+
+.form-field {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.login-label {
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgb(102, 102, 102);
+  font-weight: 600;
+}
+
+.login-input {
+  width: 100%;
+  padding: 8px;
+  border: 2px solid rgb(204, 204, 204);
+  border-radius: 8px;
+}
+
+.login-input::placeholder {
+  size: 16px;
+  line-height: 20px;
+}
+
+.input-error {
+  border: 2px solid rgb(239 68 68);
+}
+
+.error-message {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgb(239 68 68);
+}
+
+.error-icon {
+  color: rgb(239 68 68);
+  position: absolute;
+  right: 8px;
+  top: 53%;
+  transform: translateY(-50%);
+}
+
+.custom-button {
+  background-color: rgb(0, 0, 0);
+  color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition-property: background-color;
+  transition-duration: 300ms;
+}
+
+.custom-button:hover {
+  background-color: rgb(30, 30, 30);
+}
+
+@media (min-width: 768px) {
+  .form-field {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .Card {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .form {
+    width: 50vh; 
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+  }
 }
