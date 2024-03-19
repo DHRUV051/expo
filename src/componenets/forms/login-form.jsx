@@ -2,9 +2,11 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { MdError } from "react-icons/md";
+import TextInput from "../globals/TextInput";
+import SelectInput from "../globals/SelectInput";
+import Button from "../globals/Button";
 
 const LoginForm = () => {
-
   const {
     register,
     handleSubmit,
@@ -22,145 +24,58 @@ const LoginForm = () => {
     } else if (data.role === "Representative") {
       router.push("/representative");
     }
+    console.log(data);
   };
- 
+
   return (
-    <form
-    onSubmit={handleSubmit(onSubmit)}
-    className="form-container"
-  >
-    <div className="form-field">
-      <label
-        htmlFor="name"
-        className="login-label"
-      >
-        Name
-      </label>
-      <input
-        type="text"
-        className={` login-input ${errors.name ? "input-error" : ""}`}
+    <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+      <TextInput
+        label="Name"
         id="name"
         placeholder="Enter Name"
-        {...register("name", {
-          required: "Name is required",
-          maxLength: {
-            value: 50,
-            message: "Name cannot exceed 50 characters",
-          },
-        })}
+        register={register}
+        required
+        error={errors.name}
+        errorMessage="Name is required"
       />
-      {errors.name && (
-        <span className="error-message">
-          {errors.name.message}
-        </span>
-      )}
-      {errors.name && (
-        <MdError className="error-icon" />
-      )}
-    </div>
 
-    <div className="form-field">
-      <label
-        htmlFor="email"
-        className="login-label"
-      >
-        Email address
-      </label>
-      <input
-        type="email"
-        className={`login-input  ${
-          errors.email ? "input-error" : ""
-        }`}
+      <TextInput
+        label="Email address"
         id="email"
         placeholder="Enter Email"
-        {...register("email", {
-          required: "Email is required",
-          pattern: {
-            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: "Invalid email address",
-          },
-        })}
+        register={register}
+        required
+        error={errors.email}
+        errorMessage="Email is required"
       />
-      {errors.email && (
-        <span className="error-message">
-          {errors.email.message}
-        </span>
-      )}
-      {errors.email && (
-        <MdError className="error-icon" />
-      )}
-    </div>
 
-    <div className="form-field">
-      <label
-        htmlFor="password"
-        className="login-label"
-      >
-        Password
-      </label>
-      <input
-        type="password"
-        className={`login-input ${
-          errors.password ? "input-error" : ""
-        }`}
+      <TextInput
+        label="Password"
         id="password"
         placeholder="Enter Password"
-        {...register("password", {
-          required: "Password is required",
-          minLength: {
-            value: 8,
-            message: "Password must be at least 8 characters long",
-          },
-        })}
+        register={register}
+        required
+        error={errors.password}
+        errorMessage="Password is required"
       />
-      {errors.password && (
-        <span className="error-message">
-          {errors.password.message}
-        </span>
-      )}
-      {errors.password && (
-        <MdError className="error-icon" />
-      )}
-    </div>
 
-    <div className="form-field">
-      <label
-        htmlFor="role"
-        className="login-label"
-      >
-        Role
-      </label>
-      <select
+      <SelectInput
+        label="Role"
         id="role"
-        className={`login-input ${
-          errors.role ? "input-error custom-select" : ""
-        }`}
-        {...register("role", { required: "Role is required" })}
-      >
-        <option value="" disabled selected>
-          Select Role
-        </option>
-        <option value="Admin">Admin</option>
-        <option value="Front Desk">Front Desk</option>
-        <option value="Representative">Representative</option>
-      </select>
-      {errors.role && (
-        <span className="error-message">
-          {errors.role.message}
-        </span>
-      )}
-      {errors.role && (
-        <MdError className="error-icon" />
-      )}
-    </div>
+        options={[
+          
+          { value: "Admin", label: "Admin" },
+          { value: "Front Desk", label: "Front Desk" },
+          { value: "Representative", label: "Representative" },
+        ]}
+        register={register}
+        required
+        error={errors.role}
+        errorMessage="Role is required"
+      />
 
-    <button
-      type="submit"
-      className="custom-button"
-    >
-      Log In
-    </button>
-  </form>
+      <Button type={"submit"}>Login</Button>
+    </form>
   );
 };
 
