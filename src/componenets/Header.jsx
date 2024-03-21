@@ -111,7 +111,7 @@ const Header = () => {
           <button onClick={openDrawer}>
             <MdMenu size={30} />
           </button>
-          <Drawer placement="right" className="w-full" open={open} onClose={closeDrawer}>
+          <Drawer size={350} placement="right" className="w-full" open={open} onClose={closeDrawer}>
             <div className="mb-2 flex items-center justify-between p-4">
               <Typography variant="h5" color="blue-gray">
                 Material Tailwind

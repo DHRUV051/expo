@@ -29,7 +29,6 @@ const EditStudentCreateForm = ({ rowData }) => {
           }
         );
 
-        console.log("response", response.data.data);
         const studentData = response.data.data;
 
         // Populate form fields with student data
@@ -39,6 +38,15 @@ const EditStudentCreateForm = ({ rowData }) => {
         setValue("phone_number", studentData.phone_number);
         setValue("branch", studentData.branch);
         setValue("is_exam_attended", studentData.is_exam_attended);
+        setValue(
+          "exam",
+          studentData.student_exams.map((exam) => exam.exam.name)
+        );
+
+        studentData.student_exams.forEach((exam) => {
+          const scoreFieldName = `${exam.name}Score`;
+          setValue(scoreFieldName, exam.result);
+        });
 
         // Set selected countries
         const selectedCountriesData = {};
@@ -49,7 +57,7 @@ const EditStudentCreateForm = ({ rowData }) => {
         setSelectedCountries(selectedCountriesData);
 
         const selectedExamsData = studentData.student_exams.map(
-          (exam) => exam.name
+          (exam) => exam.exam.name
         );
         setSelectedExams(selectedExamsData);
 
@@ -69,13 +77,6 @@ const EditStudentCreateForm = ({ rowData }) => {
       [countryId]: isChecked,
     }));
   };
-
-  useEffect(() => {
-    const selectedExamsData = studentData.student_exams.map(
-      (exam) => exam.name
-    );
-    setSelectedExams(selectedExamsData);
-  }, [studentData.student_exams]);
 
   // Fetch countries and exams
   useEffect(() => {
@@ -140,7 +141,6 @@ const EditStudentCreateForm = ({ rowData }) => {
         delete data[scoreFieldName];
       });
 
-      console.log(data);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
         data,
@@ -301,15 +301,25 @@ const EditStudentCreateForm = ({ rowData }) => {
           {exams.map((exam) => (
             <div key={exam.u_id} className="form-field mt-4">
               {selectedExams.includes(exam.name) && (
-                <input
-                  type="text"
-                  id={`${exam.name}Score`}
-                  {...register(`${exam.name}Score`, { required: true })}
-                  className={`form-input ${
-                    errors[`${exam.name}Score`] ? "input-error" : ""
-                  }`}
-                  placeholder={`Enter Overall Score for ${exam.name}`}
-                />
+                <>
+                  <input
+                    type="text"
+                    id={`${exam.name}Score`}
+                    {...register(`${exam.name}Score`, { required: true })}
+                    defaultValue={
+                      rowData.student_exams.find(
+                        (e) => e.exam.name === exam.name
+                      )?.result || ""
+                    }
+                    className={`form-input ${
+                      errors[`${exam.name}Score`] ? "input-error" : ""
+                    }`}
+                    placeholder={`Enter Overall Score for ${exam.name}`}
+                  />
+                  {errors[`${exam.name}Score`] && (
+                    <span className="error-message">Score is required</span>
+                  )}
+                </>
               )}
             </div>
           ))}

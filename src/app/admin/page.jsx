@@ -12,6 +12,7 @@ import {
   IconButton,
   Button,
   DialogFooter,
+  Typography,
 } from "@material-tailwind/react";
 import UpdateForm from "@/componenets/forms/Update-form";
 import AddForm from "@/componenets/forms/Add-form";
@@ -137,21 +138,22 @@ const Page = () => {
     },
   ];
 
-
   const handleDelete = async (rowData) => {
     try {
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
-     console.log('Delete Response',response);
-     if(response.status === 200){
-      window.location.reload();
-     }
+      console.log("Delete Response", response);
+      if (response.status === 200) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Error deleting user data:", error);
     }
-  }
+  };
 
   const fetchData = async () => {
     const response = await axios.get(
@@ -238,33 +240,32 @@ const Page = () => {
               }
               customStyles={tableCustomStyles}
             />
-
-            {/* <div className="flex justify-center mt-3 items-center gap-4">
-              <Button
-                variant="text"
-                className="flex items-center gap-2 rounded-full"
-                onClick={prev}
-                disabled={active === 1}
-              >
-                <FaArrowLeft strokeWidth={2} className="h-4 w-4" /> Previous
-              </Button>
-              <div className="flex items-center gap-2">{}</div>
-              <Button
-                variant="text"
-                className="flex items-center gap-2 rounded-full"
-                onClick={next}
-                disabled={active === 5}
-              >
-                Next
-                <FaArrowRight strokeWidth={2} className="h-4 w-4" />
-              </Button>
-            </div> */}
           </div>
         </>
       )}
 
       <Dialog open={openEdit} handler={handleOpenEdit} suppressHydrationWarning>
-        <DialogHeader>Edit Employee</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            Edit Employee
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={handleOpenEdit}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody>
           <UpdateForm rowData={selectedRow} suppressHydrationWarning />
         </DialogBody>
@@ -275,7 +276,31 @@ const Page = () => {
         handler={handleOpenDelete}
         suppressHydrationWarning
       >
-        <DialogHeader>Delete Confirmation</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            Delete Confirmation
+          </Typography>
+          <IconButton
+            variant="text"
+            color="blue-gray"
+            onClick={handleOpenDelete}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody>
           <p>Are you sure you want to delete this user?</p>
         </DialogBody>
@@ -302,14 +327,54 @@ const Page = () => {
       </Dialog>
 
       <Dialog open={openView} handler={handleOpenView} suppressHydrationWarning>
-        <DialogHeader>View Employee</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            View Employee
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={handleOpenView}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody>
           <ViewForm rowData={selectedRow} suppressHydrationWarning />
         </DialogBody>
       </Dialog>
 
       <Dialog open={openAdd} handler={handleOpenAdd} suppressHydrationWarning>
-        <DialogHeader>Add Employee</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            Add Employee
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={handleOpenAdd}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody>
           <AddForm />
         </DialogBody>

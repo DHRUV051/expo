@@ -11,12 +11,15 @@ import {
   DialogHeader,
   Button,
   DialogFooter,
+  Typography,
+  IconButton,
 } from "@material-tailwind/react";
 
 import Loading from "@/componenets/globals/loading";
 import EditStudentCreateForm from "@/componenets/forms/Student/UpdateStudentForm";
 import StudentCreateform from "@/componenets/forms/Student/Student-Create-form";
 import ViewForm from "@/componenets/ViewForm";
+import StudentView from "@/componenets/forms/Student/ViewStudent";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -32,26 +35,15 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  const fetchUsers = async (currentPage, perPage) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log("Response", response.data.data.studentData);
-      setData(response.data.data.studentData);
-      setFilteredData(response.data.data.studentData);
-      setTotalRows(response.data.data.totalItems);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
+  const fetchUsers = async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    );
+
+    setData(response.data.data.studentData);
+    setFilteredData(response.data.studentData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -105,15 +97,15 @@ const Page = () => {
       name: "Countries",
       selector: (row) =>
         row.student_countries.map((country) => country.country.name).join(", "),
-        sortable: true,
-    },   
+      sortable: true,
+    },
     {
       name: "Exams",
       selector: (row) =>
         row.student_exams
           .map((exam) => `${exam.exam.name} (${exam.result})`)
           .join(", "),
-    },  
+    },
     {
       name: "Action",
       cell: (row) => {
@@ -137,6 +129,25 @@ const Page = () => {
       },
     },
   ];
+
+  useEffect(() => {
+    const result = data.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.email.toLowerCase().includes(search.toLowerCase()) ||
+        item.u_id.toLowerCase().includes(search.toLowerCase()) ||
+        item.student_countries
+          .map((country) => country.country.name.toLowerCase())
+          .join(", ")
+          .includes(search.toLowerCase()) ||
+        item.student_exams
+          .map((exam) => exam.exam.name.toLowerCase())
+          .join(", ")
+          .includes(search.toLowerCase())
+      );
+    });
+    setFilteredData(result);
+  }, [search, data]);
 
   const tableCustomStyles = {
     headCells: {
@@ -207,14 +218,58 @@ const Page = () => {
       )}
 
       <Dialog open={openEdit} handler={handleOpenEdit}>
-        <DialogHeader>Edit Student</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            Edit Student
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={handleOpenEdit}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody className="overflow-scroll h-[600px] scrollbar">
           <EditStudentCreateForm rowData={selectedRow} />
         </DialogBody>
       </Dialog>
 
       <Dialog open={openDelete} handler={handleOpenDelete}>
-        <DialogHeader>Delete Confirmation</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            Delete Student
+          </Typography>
+          <IconButton
+            variant="text"
+            color="blue-gray"
+            onClick={handleOpenDelete}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody>
           <p>Are you sure you want to delete this Student?</p>
         </DialogBody>
@@ -229,14 +284,54 @@ const Page = () => {
       </Dialog>
 
       <Dialog open={openView} handler={handleOpenView}>
-        <DialogHeader>View Student</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            View Student
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={handleOpenView}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody>
-          <ViewForm rowData={selectedRow} />
+          <StudentView studentData={selectedRow} />
         </DialogBody>
       </Dialog>
 
       <Dialog open={openAdd} handler={handleOpenAdd}>
-        <DialogHeader>Add Student</DialogHeader>
+        <DialogHeader className="justify-between">
+          <Typography variant="h5" color="blue-gray">
+            Add Student
+          </Typography>
+          <IconButton variant="text" color="blue-gray" onClick={handleOpenAdd}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </IconButton>
+        </DialogHeader>
         <DialogBody className="h-[500px] overflow-scroll scrollbar ">
           <StudentCreateform />
         </DialogBody>
