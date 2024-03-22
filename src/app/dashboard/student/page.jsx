@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import axios from 'axios'
@@ -32,29 +32,46 @@ const Page = () => {
   const [perPage, setPerPage] = useState(10)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedRow, setSelectedRow] = useState(null)
+  const [view, setView] = useState(false)
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`,
-          {
-            headers: { Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : null}` }
-          }
-        )
-        setTotalRows(response.data.data.payload.pagination.total)
-        setData(response.data.data.studentData)
-        setFilteredData(response.data.data.studentData)
-      } catch (error) {
-        console.error('Error fetching student data:', error)
-      } finally {
-        setLoading(false)
+    if (typeof window !== 'undefined') {
+      if (localStorage.getItem('role') === 'Admin' || localStorage.getItem('role') === 'Front Desk') {
+        setView(true)
+        fetchUsers(currentPage, perPage)
       }
     }
-
-    fetchData()
   }, [currentPage, perPage])
+
+  const fetchUsers = async (currentPage, perPage) => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`,
+      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+    )
+    setTotalRows(response.data.data.payload.pagination.total)
+    setData(response.data.data.studentData)
+    setFilteredData(response.data.data.studentData)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    const result = data.filter(item => {
+      return (
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.email.toLowerCase().includes(search.toLowerCase()) ||
+        item.u_id.toLowerCase().includes(search.toLowerCase()) ||
+        item.student_countries
+          .map(country => country.country.name.toLowerCase())
+          .join(', ')
+          .includes(search.toLowerCase()) ||
+        item.student_exams
+          .map(exam => exam.exam.name.toLowerCase())
+          .join(', ')
+          .includes(search.toLowerCase())
+      )
+    })
+    setFilteredData(result)
+  }, [search, data])
 
   const handleOpenEdit = row => {
     setSelectedRow(row)
@@ -83,25 +100,6 @@ const Page = () => {
     setPerPage(newPerPage)
     setCurrentPage(page)
   }
-
-  useEffect(() => {
-    const result = data.filter(item => {
-      return (
-        item.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.email.toLowerCase().includes(search.toLowerCase()) ||
-        item.u_id.toLowerCase().includes(search.toLowerCase()) ||
-        item.student_countries
-          .map(country => country.country.name.toLowerCase())
-          .join(', ')
-          .includes(search.toLowerCase()) ||
-        item.student_exams
-          .map(exam => exam.exam.name.toLowerCase())
-          .join(', ')
-          .includes(search.toLowerCase())
-      )
-    })
-    setFilteredData(result)
-  }, [search, data])
 
   const columns = [
     {
@@ -132,9 +130,11 @@ const Page = () => {
               <button onClick={() => handleOpenView(row)}>
                 <FaEye size={20} className='text-[rgb(102,102,102)]' />
               </button>
+
               <button onClick={() => handleOpenEdit(row)}>
                 <MdEdit size={20} />
               </button>
+
               <button onClick={() => handleOpenDelete(row)}>
                 <MdDelete size={20} className='text-red-500' />
               </button>
@@ -172,44 +172,45 @@ const Page = () => {
 
   return (
     <>
-      {(typeof window !== 'undefined' && localStorage.getItem('role') === 'Admin') ||
-      localStorage.getItem('role') === 'Front Desk' ? (
+      {view ? (
         <>
           {loading ? (
             <Loading />
           ) : (
-            <div className='lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10'>
-              <DataTable
-                title='Student'
-                columns={columns}
-                progressPending={loading}
-                data={filteredData}
-                fixedHeader
-                fixedHeaderScrollHeight='600px'
-                className='scrollbar'
-                selectableRows
-                selectableRowsHighlight
-                paginationTotalRows={totalRows}
-                paginationRowsPerPageOptions={[10, 25, 50, 100]}
-                pagination
-                paginationServer
-                onChangeRowsPerPage={handlePerRowsChange}
-                onChangePage={handlePageChange}
-                highlightOnHover
-                subHeader
-                subHeaderComponent={
-                  <input
-                    type='text'
-                    placeholder='Search'
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className='lg:w-[250px] sm:w-full md:w-[250px] form-input'
-                  />
-                }
-                actions={<Button onClick={() => setOpenAdd(!openAdd)}>Add</Button>}
-                customStyles={tableCustomStyles}
-              />
-            </div>
+            <>
+              <div className='lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10'>
+                <DataTable
+                  title='Student'
+                  columns={columns}
+                  progressPending={loading}
+                  data={filteredData}
+                  fixedHeader
+                  fixedHeaderScrollHeight='600px'
+                  className='scrollbar'
+                  selectableRows
+                  selectableRowsHighlight
+                  paginationTotalRows={totalRows}
+                  paginationRowsPerPageOptions={[10, 25, 50, 100]}
+                  pagination
+                  paginationServer
+                  onChangeRowsPerPage={handlePerRowsChange}
+                  onChangePage={handlePageChange}
+                  highlightOnHover
+                  subHeader
+                  subHeaderComponent={
+                    <input
+                      type='text'
+                      placeholder='Search'
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      className='lg:w-[250px] sm:w-full md:w-[250px] form-input'
+                    />
+                  }
+                  actions={<Button onClick={() => setOpenAdd(!openAdd)}>Add</Button>}
+                  customStyles={tableCustomStyles}
+                />
+              </div>
+            </>
           )}
 
           {/* Edit Student Modal */}
