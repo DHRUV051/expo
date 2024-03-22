@@ -1,4 +1,4 @@
-import Header from '@components/header1'
+import Header from '@components/header'
 import React from 'react'
 
 const AdminLayout = ({ children }) => {
