@@ -1,0 +1,10 @@
+.login-logo{
+    margin-top: 16px;
+    margin-left: 50px;
+}
+
+@media screen and (max-width: 768px) {
+    .login-logo{
+        margin-left: 10px;
+    }
+}

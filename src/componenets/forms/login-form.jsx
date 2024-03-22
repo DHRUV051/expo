@@ -1,10 +1,11 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { MdError } from "react-icons/md";
 import TextInput from "../globals/TextInput";
-import SelectInput from "../globals/SelectInput";
 import Button from "../globals/Button";
+import axios from "axios";
+import { useState } from "react";
+
 
 const LoginForm = () => {
   const {
@@ -14,31 +15,35 @@ const LoginForm = () => {
   } = useForm();
 
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    // const Response = await axios.post("http://localhost:3000/api/user",data);
-    if (data.role === "Admin") {
-      router.push("/admin");
-    } else if (data.role === "Front Desk") {
-      router.push("/front-desk");
-    } else if (data.role === "Representative") {
-      router.push("/representative");
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/login`,
+        data
+      );
+      setLoading(false);
+      console.log(response.data.data);
+      localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("role", response.data.data.role);
+
+      if (localStorage.getItem("role") === "Admin") {
+        router.push("/dashboard");
+      } else if (localStorage.getItem("role") === "Front-Desk") {
+        router.push("/dashboard/student");
+      } else if (localStorage.getItem("role") === "Representative") {
+        router.push("/dashboard/student");
+      }
+      
+    } catch (error) {
+      console.error(error);
     }
-    console.log(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-      <TextInput
-        label="Name"
-        id="name"
-        placeholder="Enter Name"
-        register={register}
-        required
-        error={errors.name}
-        errorMessage="Name is required"
-      />
-
       <TextInput
         label="Email address"
         id="email"
@@ -50,6 +55,7 @@ const LoginForm = () => {
       />
 
       <TextInput
+        type="password"
         label="Password"
         id="password"
         placeholder="Enter Password"
@@ -59,22 +65,9 @@ const LoginForm = () => {
         errorMessage="Password is required"
       />
 
-      <SelectInput
-        label="Role"
-        id="role"
-        options={[
-          
-          { value: "Admin", label: "Admin" },
-          { value: "Front Desk", label: "Front Desk" },
-          { value: "Representative", label: "Representative" },
-        ]}
-        register={register}
-        required
-        error={errors.role}
-        errorMessage="Role is required"
-      />
-
-      <Button type={"submit"}>Login</Button>
+      <Button disable={loading} type={"submit"}>
+        Login
+      </Button>
     </form>
   );
 };

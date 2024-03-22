@@ -1,24 +1,10 @@
-"use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextInput from "@/componenets/globals/TextInput";
-import Button from "@/componenets/globals/Button";
+
 import SelectInput from "@/componenets/globals/SelectInput";
-
-const countries = [
-  { id: 1, name: "USA" },
-  { id: 2, name: "Canada" },
-  { id: 3, name: "Australia" },
-  { id: 4, name: "UK" },
-  { id: 5, name: "Europe" },
-];
-
-const exams = [
-  { name: "IELTS", label: "IELTS" },
-  { name: "TOFEL", label: "TOFEL" },
-  { name: "GRE", label: "GRE" },
-  { name: "DUOLINGO", label: "DUOLINGO" },
-];
+import axios from "axios";
+import { Button } from "@material-tailwind/react";
 
 const StudentCreateform = () => {
   const {
@@ -27,23 +13,46 @@ const StudentCreateform = () => {
     formState: { errors },
   } = useForm();
 
-  const [selectedCountries, setSelectedCountries] = useState([
-    { USA: false },
-    { Canada: false },
-    { Australia: false },
-    { UK: false },
-    { Europe: false },
-  ]);
-
   const [isExamAttended, setIsExamAttended] = useState(false);
-
   const [selectedExams, setSelectedExams] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [exams, setExams] = useState([]);
 
-  const handleCheckboxChange = (e, index, name) => {
-    let data = [...selectedCountries];
-    data[index][name] = e.target.checked;
-    setSelectedCountries(data);
+  const [selectedCountries, setSelectedCountries] = useState({});
+
+  const handleCheckboxChange = (countryId, isChecked) => {
+    setSelectedCountries((prevSelectedCountries) => ({
+      ...prevSelectedCountries,
+      [countryId]: isChecked,
+    }));
   };
+
+  const fetchData = async () => {
+    try {
+      const countryResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/country`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      console.log("countryResponse", countryResponse);
+      setCountries(countryResponse.data.data);
+
+      const examResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/exam`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      setExams(examResponse.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleExamCheckboxChange = (examName, isChecked) => {
     setSelectedExams((prevSelectedExams) =>
@@ -57,35 +66,66 @@ const StudentCreateform = () => {
     setIsExamAttended(e.target.checked);
   };
 
-  const onSubmit = (data) => {
-    data.selectedCountries = selectedCountries;
+  const onSubmit = async (data) => {
+    try {
+      let formData = { ...data };
+      formData.country = Object.keys(selectedCountries).filter(
+        (countryId) => selectedCountries[countryId]
+      );
 
-    console.log("data", data);
+      formData.exam = selectedExams.map((examName) => {
+        const foundExam = exams.find((exam) => exam.name === examName);
+        const scoreFieldName = `${examName}Score`;
+        return {
+          u_id: foundExam ? foundExam.u_id : null,
+          result: formData[scoreFieldName],
+        };
+      });
+
+      selectedExams.forEach((examName) => {
+        const scoreFieldName = `${examName}Score`;
+        delete formData[scoreFieldName];
+      });
+
+      console.log(formData);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
+      if (response.data.statusCode === 201) {
+        window.location.reload();
+      }
+      console.log("Response:", response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-[32px] ">
-      <div className="">
-        <TextInput
-          label="Name"
-          id="name"
-          placeholder="Enter Name"
-          register={register}
-          required
-          error={errors.name}
-          errorMessage="Name is required"
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
+      <TextInput
+        label="Name"
+        id="name"
+        placeholder="Enter Name"
+        register={register}
+        required
+        error={errors.name}
+        errorMessage="Name is required"
+      />
 
-        <TextInput
-          id="email"
-          label="Email Address"
-          placeholder="Enter Email"
-          register={register}
-          required
-          error={errors.email}
-          errorMessage="Email is required"
-        />
-      </div>
+      <TextInput
+        id="email"
+        label="Email Address"
+        placeholder="Enter Email"
+        register={register}
+        required
+        error={errors.email}
+        errorMessage="Email is required"
+      />
 
       <TextInput
         id="address"
@@ -98,7 +138,7 @@ const StudentCreateform = () => {
       />
 
       <TextInput
-        id="phonenumber"
+        id="phone_number"
         label="Phone Number"
         placeholder="Enter Phone Number"
         register={register}
@@ -115,25 +155,24 @@ const StudentCreateform = () => {
           { value: "Baroda", label: "Baroda" },
           { value: "Nadiad", label: "Nadiad" },
           { value: "Surat", label: "Surat" },
-
         ]}
         register={register}
-        required
         error={errors.role}
         errorMessage="Role is required"
       />
 
       <div className="form-field">
-        <label className="form-label">Country Selection</label>
+        <label className="form-label">Countries are you interested in?</label>
         <div className="form-sub-field">
-          {countries.map((country, index) => (
-            <div key={country.id} className="flex items-center mt-[10px]">
+          {countries.map((country) => (
+            <div key={country.u_id} className="flex items-center mt-2">
               <input
                 type="checkbox"
                 id={country.name}
-                value={country.name}
-                onChange={(e) => handleCheckboxChange(e, index, country.name)}
-                {...register}
+                checked={selectedCountries[country.u_id]}
+                onChange={(e) =>
+                  handleCheckboxChange(country.u_id, e.target.checked)
+                }
                 className="checkbox-icon"
               />
               <label htmlFor={country.name} className="checkbox-label">
@@ -145,48 +184,49 @@ const StudentCreateform = () => {
       </div>
 
       <div className="form-field flex">
-        <label className="form-label checkbox-label-student mt-[4px]">
-          Is Exam Attended?
+        <label className="form-label checkbox-label-student mt-4">
+          Is Exam Any Given?
         </label>
         <input
           type="checkbox"
           id="examAttended"
-          className="checkbox-icon"
+          className="checkbox-icon extra"
           onChange={handleExamAttendanceChange}
         />
       </div>
 
       {isExamAttended && (
         <div className="form-field">
-          <label className="form-label">Select Exams</label>
+          <label className="form-label">Given Exam</label>
           <div className="form-sub-field">
-            {exams.map(({ name, label }) => (
-              <div key={name} className="flex">
+            {exams.map((exam) => (
+              <div key={exam.u_id} className="flex">
                 <input
                   type="checkbox"
-                  id={name}
+                  id={exam.name}
                   className="checkbox-icon"
                   onChange={(e) =>
-                    handleExamCheckboxChange(name, e.target.checked)
+                    handleExamCheckboxChange(exam.name, e.target.checked)
                   }
                 />
-                <label htmlFor={name} className="checkbox-label">
-                  {label}
+                <label htmlFor={exam.name} className="checkbox-label">
+                  {exam.name}
                 </label>
               </div>
             ))}
           </div>
-          {exams.map(({ name, label }) => (
-            <div key={name} className="form-field mt-4">
-              {selectedExams.includes(name) && (
+
+          {exams.map((exam) => (
+            <div key={exam.u_id} className="form-field mt-4">
+              {selectedExams.includes(exam.name) && (
                 <TextInput
-                  id={`${name}Score`}
-                  label={`Overall Score for ${label}`}
+                  id={`${exam.name}Score`}
+                  label={`Overall Score for ${exam.name}`}
                   placeholder="Enter Overall Score"
                   register={register}
                   required
-                  error={errors[`${name}Score`]}
-                  errorMessage={`Overall Score for ${label} is required`}
+                  error={errors[`${exam.name}Score`]}
+                  errorMessage={`Overall Score for ${exam.label} is required`}
                 />
               )}
             </div>
@@ -194,7 +234,23 @@ const StudentCreateform = () => {
         </div>
       )}
 
-      <Button type={"submit"}>Submit</Button>
+      <SelectInput
+        label="Other Services"
+        id="otherservices"
+        options={[
+          { value: "CANADA - PR", label: "CANADA - PR" },
+          { value: "USA H1 -B", label: "USA H1 -B" },
+          { value: "FREE GERMAN EDUCATION", label: "FREE GERMAN EDUCATION" },
+          { value: "OTHER", label: "OTHER" },
+        ]}
+        register={register}
+        error={errors.role}
+        errorMessage="Role is required"
+      />
+
+      <Button className="w-full" type="submit">
+        Add User
+      </Button>
     </form>
   );
 };
