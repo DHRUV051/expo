@@ -77,24 +77,18 @@ const EditStudentCreateForm = ({ rowData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const countryResponse = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/country`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
+        const countryResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/country`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
-        )
+        })
         setCountries(countryResponse.data.data)
 
-        const examResponse = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/exam`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
+        const examResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/exam`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
-        )
+        })
         setExams(examResponse.data.data)
       } catch (error) {
         console.error('Error fetching data:', error)
