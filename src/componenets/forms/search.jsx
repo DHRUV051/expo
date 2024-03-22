@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Button, Input } from "@material-tailwind/react";
 import { useState } from "react";
-import StudentView from "./Student/ViewStudent";
+import StudentView from "./student/viewStudent";
 import "./search.css";
 
 const SearchForm = () => {

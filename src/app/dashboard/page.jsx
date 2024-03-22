@@ -31,31 +31,9 @@ const Page = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openView, setOpenView] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
-  // const [totalRows, setTotalRows] = useState(0);
-  // const [perPage, setPerPage] = useState(10);
-  // const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
   const [active, setActive] = React.useState(1);
 
-  // const getItemProps = (index) =>
-  //   ({
-  //     variant: active === index ? "filled" : "text",
-  //     color: "gray",
-  //     onClick: () => setActive(index),
-  //     className: "rounded-full",
-  //   } || {});
-
-  // const next = () => {
-  //   if (active === 5) return;
-
-  //   setActive(active + 1);
-  // };
-
-  // const prev = () => {
-  //   if (active === 1) return;
-
-  //   setActive(active - 1);
-  // };
 
   const handleOpenEdit = (row) => {
     setSelectedRow(row);
@@ -76,23 +54,7 @@ const Page = () => {
     setOpenAdd(!openAdd);
   };
 
-  // const handlePageChange = (page) => {
-  //   setCurrentPage(page);
-  //   fetchUsers(page);
-  // };
-
-  // const handlePerRowsChange = async (newPerPage, page) => {
-  //   setLoading(true);
-
-  //   const response = await axios.get(
-  //     `https://reqres.in/api/users?page=${page}&per_page=${newPerPage}&delay=1`
-  //   );
-
-  //   setData(response.data.data);
-  //   setPerPage(newPerPage);
-  //   setLoading(false);
-  // };
-
+  
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(false);
@@ -126,7 +88,6 @@ const Page = () => {
               <button onClick={() => handleOpenView(row)}>
                 <FaEye size={20} className="text-[rgb(102,102,102)]" />
               </button>
-
               <button onClick={() => handleOpenEdit(row)}>
                 <MdEdit size={20} />
               </button>
@@ -222,12 +183,7 @@ const Page = () => {
               fixedHeaderScrollHeight="500px"
               selectableRows
               selectableRowsHighlight
-              // onSelectedRowsChange={handleRowSelected}
               pagination
-              // paginationServer
-              // paginationTotalRows={totalRows}
-              // onChangeRowsPerPage={handlePerRowsChange}
-              // onChangePage={handlePageChange}
               highlightOnHover
               subHeader
               subHeaderComponent={
