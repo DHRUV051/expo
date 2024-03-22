@@ -73,7 +73,7 @@ const Page = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_NGROK_API}/admin`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
 
@@ -117,7 +117,7 @@ const Page = () => {
 
   const handleDelete = async rowData => {
     try {
-      const response = await axios.delete(`${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`, {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/admin/${rowData.u_id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       console.log('Delete Response', response)
@@ -157,7 +157,7 @@ const Page = () => {
   return (
     <>
       {loading ? (
-        <Loading />
+        <Loading suppressHydrationWarning></Loading>
       ) : (
         <>
           <div className='lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10'>

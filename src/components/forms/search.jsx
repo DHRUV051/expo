@@ -15,10 +15,13 @@ const SearchForm = () => {
   const onSubmit = async data => {
     setLoading(true)
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_NGROK_API}/student/${data.search}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/student/${data.search}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        
       })
       setData(response.data.data)
     } catch (error) {

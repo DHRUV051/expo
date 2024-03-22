@@ -3,10 +3,10 @@ import React from 'react'
 
 const AdminLayout = ({ children }) => {
   return (
-    <div>
-      <Header />
-      {children}
-    </div>
+    <>
+        <Header  suppressHydrationWarning/>
+        {children}
+    </>
   )
 }
 

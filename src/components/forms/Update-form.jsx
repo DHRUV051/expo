@@ -17,10 +17,14 @@ const UpdateForm = ({ rowData }) => {
 
   const onSubmit = async data => {
     try {
-      const response = await axios.patch(`${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`, data, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      console.log('response', response)
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/${rowData.u_id}`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      console.log("response", response);
       if (response.data.statusCode === 201) {
         window.location.reload()
       }

@@ -46,7 +46,7 @@ const Page = () => {
   const fetchUsers = async (currentPage, perPage) => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/student?page=${currentPage}&items_per_page=${perPage}`,
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       )
       setTotalRows(response.data.data.payload.pagination.total)
