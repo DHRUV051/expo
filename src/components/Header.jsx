@@ -18,37 +18,32 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/logout`
-      );
-      console.log("response", response);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/logout`)
+      console.log('response', response)
       if (response.data.statusCode === 200) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        
-        return router.push("/login");
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+
+        return router.push('/login')
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  const isLocalStorageAvailable = typeof window !== "undefined" && window.localStorage;
+  const isLocalStorageAvailable = typeof window !== 'undefined' && window.localStorage
 
   return (
     <>
       <div className='navbar'>
         <Image src={Logo} alt='sk_logo' width={60} height={60} />
 
-        {isLocalStorageAvailable && localStorage.getItem("role") === "Admin" && (
-          <div className="desktopNavbar">
-            <ul className="list">
-              <li className="list-item">
-                {localStorage.getItem("role") === "Admin" && (
-                  <Link
-                    href={"/dashboard"}
-                    className={clsx(pathname === "/dashboard" ? "active" : "")}
-                  >
+        {isLocalStorageAvailable && localStorage.getItem('role') === 'Admin' && (
+          <div className='desktopNavbar'>
+            <ul className='list'>
+              <li className='list-item'>
+                {localStorage.getItem('role') === 'Admin' && (
+                  <Link href={'/dashboard'} className={clsx(pathname === '/dashboard' ? 'active' : '')}>
                     Employee
                   </Link>
                 )}
@@ -62,8 +57,8 @@ const Header = () => {
           </div>
         )}
 
-        {isLocalStorageAvailable && localStorage.getItem("role") === "Admin" && (
-          <div className="mobileNavbar">
+        {isLocalStorageAvailable && localStorage.getItem('role') === 'Admin' && (
+          <div className='mobileNavbar'>
             <button onClick={openDrawer}>
               <MdMenu size={30} />
             </button>
@@ -104,16 +99,17 @@ const Header = () => {
               </List>
             </Drawer>
           </div>
-        )} 
-
-        {isLocalStorageAvailable && (localStorage.getItem("role") === "Front Desk" || localStorage.getItem("role") === "Representative") && (
-          <Button className="" onClick={() => handleLogout()}>
-            Log Out
-          </Button>
         )}
 
-        {isLocalStorageAvailable && localStorage.getItem("role") === "Admin" && (
-          <Button className="desktopNavbar" onClick={() => handleLogout()}>
+        {isLocalStorageAvailable &&
+          (localStorage.getItem('role') === 'Front Desk' || localStorage.getItem('role') === 'Representative') && (
+            <Button className='' onClick={() => handleLogout()}>
+              Log Out
+            </Button>
+          )}
+
+        {isLocalStorageAvailable && localStorage.getItem('role') === 'Admin' && (
+          <Button className='desktopNavbar' onClick={() => handleLogout()}>
             Log Out
           </Button>
         )}

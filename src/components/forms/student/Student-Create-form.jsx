@@ -29,22 +29,16 @@ const StudentCreateform = () => {
 
   const fetchData = async () => {
     try {
-      const countryResponse = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/country`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      console.log("countryResponse", countryResponse);
-      setCountries(countryResponse.data.data);
+      const countryResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/country`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+      console.log('countryResponse', countryResponse)
+      setCountries(countryResponse.data.data)
 
-      const examResponse = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/exam`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      setExams(examResponse.data.data);
+      const examResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/exam`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+      setExams(examResponse.data.data)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
@@ -75,26 +69,21 @@ const StudentCreateform = () => {
 
         return {
           u_id: foundExam ? foundExam.u_id : null,
-          result: formData[scoreFieldName],
-        };
-      });
-
-      selectedExams.forEach((examName) => {
-        const scoreFieldName = `${examName}Score`;
-        delete formData[scoreFieldName];
-      });
-
-      console.log(formData);
-
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/student`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        
+          result: formData[scoreFieldName]
+        }
       })
 
-     
+      selectedExams.forEach(examName => {
+        const scoreFieldName = `${examName}Score`
+        delete formData[scoreFieldName]
+      })
+
+      console.log(formData)
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, formData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+
       if (response.data.statusCode === 201) {
         window.location.reload()
       }

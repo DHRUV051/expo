@@ -20,13 +20,10 @@ const EditStudentCreateForm = ({ rowData }) => {
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/student/${rowData.u_id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/student/${rowData.u_id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
         })
 
         const studentData = response.data.data
@@ -127,25 +124,18 @@ const EditStudentCreateForm = ({ rowData }) => {
 
         return {
           u_id: foundExam ? foundExam.u_id : null,
-          result: data[scoreFieldName],
-        };
-      });
-
-      selectedExams.forEach((examName) => {
-        const scoreFieldName = `${examName}Score`;
-        delete data[scoreFieldName];
-      });
-
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/student`,
-        data,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        
+          result: data[scoreFieldName]
+        }
       })
 
-     
-     
+      selectedExams.forEach(examName => {
+        const scoreFieldName = `${examName}Score`
+        delete data[scoreFieldName]
+      })
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
 
       console.log('Response:', response)
     } catch (error) {

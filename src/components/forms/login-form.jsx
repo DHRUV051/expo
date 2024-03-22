@@ -19,14 +19,11 @@ const LoginForm = () => {
   const onSubmit = async data => {
     setLoading(true)
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/login`,
-        data
-      );
-      setLoading(false);
-      console.log(response.data.data);
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("role", response.data.data.role);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login`, data)
+      setLoading(false)
+      console.log(response.data.data)
+      localStorage.setItem('token', response.data.data.token)
+      localStorage.setItem('role', response.data.data.role)
 
       if (localStorage.getItem('role') === 'Admin') {
         router.push('/dashboard')

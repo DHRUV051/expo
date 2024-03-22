@@ -11,8 +11,8 @@ const Page = () => {
       const token = localStorage.getItem('token')
       const role = localStorage.getItem('role')
 
-      if(!token){
-        routerRef.current.push("/login");
+      if (!token) {
+        routerRef.current.push('/login')
       }
 
       if (token) {
