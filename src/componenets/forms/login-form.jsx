@@ -13,32 +13,35 @@ const LoginForm = () => {
   } = useForm();
 
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    try{
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_NGROK_API}/login`, data);
-      console.log( response.data.data);
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/login`,
+        data
+      );
+      setLoading(false);
+      console.log(response.data.data);
       localStorage.setItem("token", response.data.data.token);
       localStorage.setItem("role", response.data.data.role);
+
+      if (localStorage.getItem("role") === "Admin") {
+        router.push("/dashboard");
+      } else if (localStorage.getItem("role") === "Front-Desk") {
+        router.push("/dashboard/student");
+      } else if (localStorage.getItem("role") === "Representative") {
+        router.push("/dashboard/student");
+      }
       
-  if(localStorage.getItem("role")) {
-    router.push("/admin");
-  }else if( localStorage.getItem("role")) {
-    router.push("/front-desk");
-  }else if(localStorage.getItem("role")) {
-    router.push("/representative");
-  }
-    }
-    catch(error){
+    } catch (error) {
       console.error(error);
     }
-   
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
-    
       <TextInput
         label="Email address"
         id="email"
@@ -60,8 +63,9 @@ const LoginForm = () => {
         errorMessage="Password is required"
       />
 
-      
-      <Button type={"submit"}>Login</Button>
+      <Button disable={loading} type={"submit"}>
+        Login
+      </Button>
     </form>
   );
 };

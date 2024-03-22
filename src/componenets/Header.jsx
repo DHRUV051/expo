@@ -26,6 +26,7 @@ const Header = () => {
   const closeDrawer = () => setOpen(false);
   const pathname = usePathname();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -54,8 +55,8 @@ const Header = () => {
               {
                 localStorage.getItem("role") === "Admin" && (
                   <Link
-                  href={"/admin"}
-                  className={clsx(pathname === "/admin" ? "active" : "")}
+                  href={"/dashboard"}
+                  className={clsx(pathname === "/dashboard" ? "active" : "")}
                 >
                   Employee
                 </Link>
@@ -65,8 +66,8 @@ const Header = () => {
             </li>
             <li className="list-item">
               <Link
-                href={"/admin/student"}
-                className={clsx(pathname === "/admin/student" ? "active" : "")}
+                href={"/dashboard/student"}
+                className={clsx(pathname === "/dashboard/student" ? "active" : "")}
               >
                 Student
               </Link>
@@ -114,7 +115,7 @@ const Header = () => {
           <Drawer size={350} placement="right" className="w-full" open={open} onClose={closeDrawer}>
             <div className="mb-2 flex items-center justify-between p-4">
               <Typography variant="h5" color="blue-gray">
-                Material Tailwind
+                Menu
               </Typography>
               <IconButton
                 variant="text"
@@ -140,23 +141,23 @@ const Header = () => {
             <List>
               <ListItem className="">
                 <Link
-                  href={"/admin"}
-                  className={clsx(pathname === "/admin" ? "active" : "")}
+                  href={"/dashboard"}
+                  className={clsx(pathname === "/dashboard" ? "active" : "")}
                 >
                   Employee
                 </Link>
               </ListItem>
               <ListItem>
                 <Link
-                  href={"/admin/student "}
-                  className={clsx(pathname === "/admin" ? "active" : "")}
+                  href={"/dashboard/student"}
+                  className={clsx(pathname === "/dashboard/student" ? "active" : "")}
                 >
                   Student
                 </Link>
               </ListItem>
               <ListItem>
                 <Button
-                  className=" desktopNavbar"
+                  className=""
                   onClick={() => handleLogout()}
                 >
                   Log Out
@@ -166,7 +167,7 @@ const Header = () => {
           </Drawer>
         </div>
 
-        <Button className=" desktopNavbar" onClick={() => handleLogout()}>
+        <Button  className="desktopNavbar" onClick={() => handleLogout()}>
           Log Out
         </Button>
       </div>

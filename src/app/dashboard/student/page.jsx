@@ -1,22 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-import Loading from "@/componenets/globals/loading-page";
-import { MdDelete, MdEdit } from "react-icons/md";
-import { FaArrowLeft, FaArrowRight, FaEye } from "react-icons/fa";
 import {
   Dialog,
   DialogBody,
   DialogHeader,
-  IconButton,
   Button,
   DialogFooter,
   Typography,
+  IconButton,
+  Input,
 } from "@material-tailwind/react";
-import UpdateForm from "@/componenets/forms/Update-form";
-import AddForm from "@/componenets/forms/Add-form";
-import ViewForm from "@/componenets/ViewForm";
+import { FaEye } from "react-icons/fa";
+import { MdDelete, MdEdit } from "react-icons/md";
+import StudentCreateform from "@/componenets/forms/Student/Student-Create-form";
+import StudentView from "@/componenets/forms/Student/ViewStudent";
+import EditStudentCreateForm from "@/componenets/forms/Student/UpdateStudentForm";
+import SearchForm from "@/componenets/forms/search";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -27,31 +28,25 @@ const Page = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openView, setOpenView] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
-  // const [totalRows, setTotalRows] = useState(0);
-  // const [perPage, setPerPage] = useState(10);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
+  const [perPage, setPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [active, setActive] = React.useState(1);
 
-  // const getItemProps = (index) =>
-  //   ({
-  //     variant: active === index ? "filled" : "text",
-  //     color: "gray",
-  //     onClick: () => setActive(index),
-  //     className: "rounded-full",
-  //   } || {});
+  const fetchUsers = async () => {
+    // const response = await axios.get(
+    //   `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
+    //   { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    // );
 
-  // const next = () => {
-  //   if (active === 5) return;
+    // setData(response.data.data.studentData);
+    // setFilteredData(response.data.data.studentData);
+    // setLoading(false);
+  };
 
-  //   setActive(active + 1);
-  // };
-
-  // const prev = () => {
-  //   if (active === 1) return;
-
-  //   setActive(active - 1);
-  // };
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, perPage]);
 
   const handleOpenEdit = (row) => {
     setSelectedRow(row);
@@ -72,46 +67,26 @@ const Page = () => {
     setOpenAdd(!openAdd);
   };
 
-  // const handlePageChange = (page) => {
-  //   setCurrentPage(page);
-  //   fetchUsers(page);
-  // };
-
-  // const handlePerRowsChange = async (newPerPage, page) => {
-  //   setLoading(true);
-
-  //   const response = await axios.get(
-  //     `https://reqres.in/api/users?page=${page}&per_page=${newPerPage}&delay=1`
-  //   );
-
-  //   setData(response.data.data);
-  //   setPerPage(newPerPage);
-  //   setLoading(false);
-  // };
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, []);
-
   const columns = [
+    {
+      name: "Id",
+      selector: (row) => row.u_id,
+      sortable: true,
+    },
     {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,
-      grow: 1,
     },
     {
       name: "Email",
       selector: (row) => row.email,
-      grow: 1,
     },
     {
-      name: "Role",
-      selector: (row) => row.role,
-      grow: 2,
+      name: "Countries",
+      selector: (row) =>
+        row.student_countries.map((country) => country.country.name).join(", "),
+      sortable: true,
     },
     {
       name: "Action",
@@ -134,48 +109,8 @@ const Page = () => {
           </>
         );
       },
-      grow: 1,
     },
   ];
-
-  const handleDelete = async (rowData) => {
-    try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      console.log("Delete Response", response);
-      if (response.status === 200) {
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error("Error deleting user data:", error);
-    }
-  };
-
-  const fetchData = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    );
-
-    setData(response.data.data.adminData);
-    setFilteredData(response.data.adminData);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const result = data.filter((item) => {
-      return item.name.toLowerCase().includes(search.toLowerCase());
-    });
-    setFilteredData(result);
-  }, [search, data]);
 
   const tableCustomStyles = {
     headCells: {
@@ -196,26 +131,28 @@ const Page = () => {
     header: {
       style: {
         fontSize: "30px",
-        fontWeight: "bold",
+        fontWeight: 700,
         paddingLeft: "0px 8px",
       },
     },
   };
 
-  return (
+  return localStorage.getItem("role") === "Admin" ||
+    localStorage.getItem("role") === "Front Desk" ? (
     <>
       {loading ? (
-        <Loading />
+        <p>Loading...</p>
       ) : (
         <>
           <div className="lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10">
             <DataTable
-              title="Employee"
+              title="Student"
               columns={columns}
               progressPending={loading}
               data={filteredData}
               fixedHeader
-              fixedHeaderScrollHeight="500px"
+              fixedHeaderScrollHeight="600px"
+              className="scrollbar"
               selectableRows
               selectableRowsHighlight
               // onSelectedRowsChange={handleRowSelected}
@@ -244,10 +181,11 @@ const Page = () => {
         </>
       )}
 
-      <Dialog open={openEdit} handler={handleOpenEdit} suppressHydrationWarning>
+      {/* Edit Student Modal */}
+      <Dialog open={openEdit} handler={handleOpenEdit}>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            Edit Employee
+            Edit Student
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={handleOpenEdit}>
             <svg
@@ -266,19 +204,16 @@ const Page = () => {
             </svg>
           </IconButton>
         </DialogHeader>
-        <DialogBody>
-          <UpdateForm rowData={selectedRow} suppressHydrationWarning />
+        <DialogBody className="overflow-scroll h-[600px] scrollbar">
+          <EditStudentCreateForm rowData={selectedRow} />
         </DialogBody>
       </Dialog>
 
-      <Dialog
-        open={openDelete}
-        handler={handleOpenDelete}
-        suppressHydrationWarning
-      >
+      {/* Delete Student Modal */}
+      <Dialog open={openDelete} handler={handleOpenDelete}>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            Delete Confirmation
+            Delete Student
           </Typography>
           <IconButton
             variant="text"
@@ -302,34 +237,23 @@ const Page = () => {
           </IconButton>
         </DialogHeader>
         <DialogBody>
-          <p>Are you sure you want to delete this user?</p>
+          <p>Are you sure you want to delete this Student?</p>
         </DialogBody>
         <DialogFooter>
-          <Button
-            variant="text"
-            color="green"
-            onClick={handleOpenDelete}
-            className="mr-1"
-          >
+          <Button variant="text" color="green" onClick={handleOpenDelete}>
             <span>Cancel</span>
           </Button>
-          <Button
-            variant="gradient"
-            color="red"
-            onClick={() => {
-              handleOpenDelete;
-              handleDelete(selectedRow);
-            }}
-          >
+          <Button variant="gradient" color="red" onClick={handleOpenDelete}>
             <span>Delete</span>
           </Button>
         </DialogFooter>
       </Dialog>
 
-      <Dialog open={openView} handler={handleOpenView} suppressHydrationWarning>
+      {/* View Student Modal */}
+      <Dialog open={openView} handler={handleOpenView}>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            View Employee
+            View Student
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={handleOpenView}>
             <svg
@@ -349,14 +273,15 @@ const Page = () => {
           </IconButton>
         </DialogHeader>
         <DialogBody>
-          <ViewForm rowData={selectedRow} suppressHydrationWarning />
+          <StudentView studentData={selectedRow} />
         </DialogBody>
       </Dialog>
 
-      <Dialog open={openAdd} handler={handleOpenAdd} suppressHydrationWarning>
+      {/* Add Student Modal */}
+      <Dialog open={openAdd} handler={handleOpenAdd}>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            Add Employee
+            Add Student
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={handleOpenAdd}>
             <svg
@@ -375,10 +300,16 @@ const Page = () => {
             </svg>
           </IconButton>
         </DialogHeader>
-        <DialogBody>
-          <AddForm />
+        <DialogBody className="h-[500px] overflow-scroll scrollbar ">
+          <StudentCreateform />
         </DialogBody>
       </Dialog>
+    </>
+  ) : (
+    <>
+      <div className="flex mt-[50px] px-[30px] md:px-[50px] ">
+        <SearchForm />
+      </div>
     </>
   );
 };

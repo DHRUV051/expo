@@ -19,13 +19,14 @@ const AddForm = () => {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
         data,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       console.log(response);
-      if(response.data.statusCode === 201) {
+      if (response.data.statusCode === 201) {
         window.location.reload();
       }
-        
     } catch (error) {
       console.error(error);
     }
@@ -75,6 +76,7 @@ const AddForm = () => {
             errors.role ? "input-error custom-select" : ""
           }`}
         >
+          <option value="Admin">Admin</option>
           <option value="Front Desk">Front Desk</option>
           <option value="Representative">Representative</option>
         </select>

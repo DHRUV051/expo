@@ -1,27 +1,28 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-
+import Loading from "@/componenets/globals/loading-page";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { FaEye } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaEye } from "react-icons/fa";
 import {
   Dialog,
   DialogBody,
   DialogHeader,
+  IconButton,
   Button,
   DialogFooter,
   Typography,
-  IconButton,
 } from "@material-tailwind/react";
-
-import Loading from "@/componenets/globals/loading";
-import EditStudentCreateForm from "@/componenets/forms/Student/UpdateStudentForm";
-import StudentCreateform from "@/componenets/forms/Student/Student-Create-form";
+import UpdateForm from "@/componenets/forms/Update-form";
+import AddForm from "@/componenets/forms/Add-form";
 import ViewForm from "@/componenets/ViewForm";
-import StudentView from "@/componenets/forms/Student/ViewStudent";
 
 const Page = () => {
+  if (localStorage.getItem("role") !== "Admin") {
+    return router.push("/dashboard/student");
+  }
+
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -30,33 +31,30 @@ const Page = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openView, setOpenView] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
-  const [totalRows, setTotalRows] = useState(0);
-  const [perPage, setPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [totalRows, setTotalRows] = useState(0);
+  // const [perPage, setPerPage] = useState(10);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [active, setActive] = React.useState(1);
 
-  const fetchUsers = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    );
+  // const getItemProps = (index) =>
+  //   ({
+  //     variant: active === index ? "filled" : "text",
+  //     color: "gray",
+  //     onClick: () => setActive(index),
+  //     className: "rounded-full",
+  //   } || {});
 
-    setData(response.data.data.studentData);
-    setFilteredData(response.data.studentData);
-    setLoading(false);
-  };
+  // const next = () => {
+  //   if (active === 5) return;
 
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, perPage]);
-
-  // const handlePageChange = (page) => {
-  //   setCurrentPage(page);
+  //   setActive(active + 1);
   // };
 
-  // const handlePerRowsChange = async (newPerPage) => {
-  //   setPerPage(newPerPage);
-  //   setCurrentPage(1);
+  // const prev = () => {
+  //   if (active === 1) return;
+
+  //   setActive(active - 1);
   // };
 
   const handleOpenEdit = (row) => {
@@ -78,33 +76,46 @@ const Page = () => {
     setOpenAdd(!openAdd);
   };
 
+  // const handlePageChange = (page) => {
+  //   setCurrentPage(page);
+  //   fetchUsers(page);
+  // };
+
+  // const handlePerRowsChange = async (newPerPage, page) => {
+  //   setLoading(true);
+
+  //   const response = await axios.get(
+  //     `https://reqres.in/api/users?page=${page}&per_page=${newPerPage}&delay=1`
+  //   );
+
+  //   setData(response.data.data);
+  //   setPerPage(newPerPage);
+  //   setLoading(false);
+  // };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, []);
+
   const columns = [
-    {
-      name: "Id",
-      selector: (row) => row.u_id,
-      sortable: true,
-    },
     {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,
+      grow: 1,
     },
     {
       name: "Email",
       selector: (row) => row.email,
+      grow: 1,
     },
     {
-      name: "Countries",
-      selector: (row) =>
-        row.student_countries.map((country) => country.country.name).join(", "),
-      sortable: true,
-    },
-    {
-      name: "Exams",
-      selector: (row) =>
-        row.student_exams
-          .map((exam) => `${exam.exam.name} (${exam.result})`)
-          .join(", "),
+      name: "Role",
+      selector: (row) => row.role,
+      grow: 2,
     },
     {
       name: "Action",
@@ -127,24 +138,45 @@ const Page = () => {
           </>
         );
       },
+      grow: 1,
     },
   ];
 
+  const handleDelete = async (rowData) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      console.log("Delete Response", response);
+      if (response.status === 200) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting user data:", error);
+    }
+  };
+
+  const fetchData = async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    );
+
+    setData(response.data.data.adminData);
+    setFilteredData(response.data.adminData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const result = data.filter((item) => {
-      return (
-        item.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.email.toLowerCase().includes(search.toLowerCase()) ||
-        item.u_id.toLowerCase().includes(search.toLowerCase()) ||
-        item.student_countries
-          .map((country) => country.country.name.toLowerCase())
-          .join(", ")
-          .includes(search.toLowerCase()) ||
-        item.student_exams
-          .map((exam) => exam.exam.name.toLowerCase())
-          .join(", ")
-          .includes(search.toLowerCase())
-      );
+      return item.name.toLowerCase().includes(search.toLowerCase());
     });
     setFilteredData(result);
   }, [search, data]);
@@ -182,7 +214,7 @@ const Page = () => {
         <>
           <div className="lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10">
             <DataTable
-              title="Student"
+              title="Employee"
               columns={columns}
               progressPending={loading}
               data={filteredData}
@@ -190,9 +222,8 @@ const Page = () => {
               fixedHeaderScrollHeight="500px"
               selectableRows
               selectableRowsHighlight
-              className="scrollbar"
+              // onSelectedRowsChange={handleRowSelected}
               pagination
-              // paginationRowsPerPageOptions={[5, 10, 25, 50]}
               // paginationServer
               // paginationTotalRows={totalRows}
               // onChangeRowsPerPage={handlePerRowsChange}
@@ -217,10 +248,10 @@ const Page = () => {
         </>
       )}
 
-      <Dialog open={openEdit} handler={handleOpenEdit}>
+      <Dialog open={openEdit} handler={handleOpenEdit} suppressHydrationWarning>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            Edit Student
+            Edit Employee
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={handleOpenEdit}>
             <svg
@@ -239,15 +270,19 @@ const Page = () => {
             </svg>
           </IconButton>
         </DialogHeader>
-        <DialogBody className="overflow-scroll h-[600px] scrollbar">
-          <EditStudentCreateForm rowData={selectedRow} />
+        <DialogBody>
+          <UpdateForm rowData={selectedRow} suppressHydrationWarning />
         </DialogBody>
       </Dialog>
 
-      <Dialog open={openDelete} handler={handleOpenDelete}>
+      <Dialog
+        open={openDelete}
+        handler={handleOpenDelete}
+        suppressHydrationWarning
+      >
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            Delete Student
+            Delete Confirmation
           </Typography>
           <IconButton
             variant="text"
@@ -271,22 +306,34 @@ const Page = () => {
           </IconButton>
         </DialogHeader>
         <DialogBody>
-          <p>Are you sure you want to delete this Student?</p>
+          <p>Are you sure you want to delete this user?</p>
         </DialogBody>
         <DialogFooter>
-          <Button variant="text" color="green" onClick={handleOpenDelete}>
+          <Button
+            variant="text"
+            color="green"
+            onClick={handleOpenDelete}
+            className="mr-1"
+          >
             <span>Cancel</span>
           </Button>
-          <Button variant="gradient" color="red" onClick={handleOpenDelete}>
+          <Button
+            variant="gradient"
+            color="red"
+            onClick={() => {
+              handleOpenDelete;
+              handleDelete(selectedRow);
+            }}
+          >
             <span>Delete</span>
           </Button>
         </DialogFooter>
       </Dialog>
 
-      <Dialog open={openView} handler={handleOpenView}>
+      <Dialog open={openView} handler={handleOpenView} suppressHydrationWarning>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            View Student
+            View Employee
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={handleOpenView}>
             <svg
@@ -306,14 +353,14 @@ const Page = () => {
           </IconButton>
         </DialogHeader>
         <DialogBody>
-          <StudentView studentData={selectedRow} />
+          <ViewForm rowData={selectedRow} suppressHydrationWarning />
         </DialogBody>
       </Dialog>
 
-      <Dialog open={openAdd} handler={handleOpenAdd}>
+      <Dialog open={openAdd} handler={handleOpenAdd} suppressHydrationWarning>
         <DialogHeader className="justify-between">
           <Typography variant="h5" color="blue-gray">
-            Add Student
+            Add Employee
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={handleOpenAdd}>
             <svg
@@ -332,8 +379,8 @@ const Page = () => {
             </svg>
           </IconButton>
         </DialogHeader>
-        <DialogBody className="h-[500px] overflow-scroll scrollbar ">
-          <StudentCreateform />
+        <DialogBody>
+          <AddForm />
         </DialogBody>
       </Dialog>
     </>

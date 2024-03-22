@@ -66,7 +66,6 @@ const UpdateForm = ({ rowData }) => {
           <input
             type={showPassword ? "text" : "password"}
             id="password"
-            defaultValue={rowData.password}
             {...register("password", { required: true })}
             className={`form-input ${errors.password ? "input-error" : ""}`}
           />
