@@ -15,7 +15,7 @@ const AddForm = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin`,
         data,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

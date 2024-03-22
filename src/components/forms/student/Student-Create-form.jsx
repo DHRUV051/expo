@@ -30,7 +30,7 @@ const StudentCreateform = () => {
   const fetchData = async () => {
     try {
       const countryResponse = await axios.get(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/country`,
+        `${process.env.NEXT_PUBLIC_API_URL}/country`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -39,7 +39,7 @@ const StudentCreateform = () => {
       setCountries(countryResponse.data.data);
 
       const examResponse = await axios.get(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/exam`,
+        `${process.env.NEXT_PUBLIC_API_URL}/exam`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -91,7 +91,7 @@ return {
       console.log(formData);
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
+        `${process.env.NEXT_PUBLIC_API_URL}/student`,
         formData,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
