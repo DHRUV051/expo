@@ -37,6 +37,7 @@ const Header = () => {
       if (response.data.statusCode === 200) {
         console.log("token", localStorage.getItem("token"));
         localStorage.removeItem("token", null);
+        localStorage.removeItem("role", null);
         return router.push("/login");
       }
     } catch (error) {
