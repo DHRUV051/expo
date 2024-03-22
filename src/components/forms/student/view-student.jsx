@@ -1,5 +1,5 @@
 import React from 'react'
-import './StudentView.css' // Import CSS file for styling
+import './student-view.css'
 
 const StudentView = ({ studentData }) => {
   console.log('studentData', studentData)

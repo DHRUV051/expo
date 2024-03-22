@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Button from '../globals/Button'
+import Button from '../globals/button'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 

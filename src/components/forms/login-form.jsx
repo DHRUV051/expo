@@ -1,8 +1,8 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import TextInput from '../globals/TextInput'
-import Button from '../globals/Button'
+import TextInput from '../globals/text-input'
+import Button from '../globals/button'
 import axios from 'axios'
 import { useState } from 'react'
 

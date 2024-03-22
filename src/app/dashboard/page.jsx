@@ -14,9 +14,9 @@ import {
   DialogFooter,
   Typography
 } from '@material-tailwind/react'
-import UpdateForm from '@components/forms/Update-form'
-import AddForm from '@components/forms/Add-form'
-import ViewForm from '@components/ViewForm'
+import UpdateForm from '@components/forms/update-form'
+import AddForm from '@components/forms/add-form'
+import ViewForm from '@components/view-form'
 
 const Page = () => {
   const [loading, setLoading] = useState(true)

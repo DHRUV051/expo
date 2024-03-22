@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import TextInput from '@components/globals/TextInput'
+import TextInput from '@components/globals/text-input'
 
-import SelectInput from '@components/globals/SelectInput'
+import SelectInput from '@components/globals/select-input'
 import axios from 'axios'
 import { Button } from '@material-tailwind/react'
 
@@ -216,7 +216,7 @@ const StudentCreateform = () => {
         </div>
       )}
 
-      <SelectInput
+      {/* <SelectInput
         label='Other Services'
         id='otherservices'
         options={[
@@ -228,7 +228,7 @@ const StudentCreateform = () => {
         register={register}
         error={errors.role}
         errorMessage='Role is required'
-      />
+      /> */}
 
       <Button className='w-full' type='submit'>
         Add User

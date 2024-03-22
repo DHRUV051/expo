@@ -1,5 +1,5 @@
 import React from 'react'
-import './ViewForm.css'
+import './view-form.css'
 import '@styles-page/view-employee.module.css'
 
 const ViewForm = ({ rowData }) => {

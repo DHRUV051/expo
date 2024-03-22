@@ -61,3 +61,19 @@ export const deleteEmployeeMessage = () => {
 export const cancel_ = () => {
     return "Cancel";
 }
+
+export const viewEmployee = () => {
+    return "View Employee"
+}
+
+export const addEmployee = () => {
+    return "Add Employee"
+}
+
+export const editStudent = () => {
+    return "Edit Student"
+}
+
+export const addStudent = () => {
+    return "Add Student"
+}

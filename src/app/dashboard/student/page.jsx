@@ -13,9 +13,9 @@ import {
 } from '@material-tailwind/react'
 import { FaEye } from 'react-icons/fa'
 import { MdDelete, MdEdit } from 'react-icons/md'
-import StudentCreateform from '@components/forms/student/student-Create-form'
-import StudentView from '@components/forms/student/viewStudent'
-import EditStudentCreateForm from '@components/forms/student/updateStudentForm'
+import StudentCreateform from '@components/forms/student/student-create-form'
+import StudentView from '@components/forms/student/view-student'
+import EditStudentCreateForm from '@components/forms/student/update-student-form'
 import SearchForm from '@components/forms/search'
 import Loading from '@components/globals/loading-page'
 
