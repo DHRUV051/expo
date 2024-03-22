@@ -31,14 +31,18 @@ const StudentCreateform = () => {
     try {
       const countryResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_NGROK_API}/country`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
-      console.log('countryResponse', countryResponse);
-     setCountries(countryResponse.data.data);
+      console.log("countryResponse", countryResponse);
+      setCountries(countryResponse.data.data);
 
       const examResponse = await axios.get(
         `${process.env.NEXT_PUBLIC_NGROK_API}/exam`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       setExams(examResponse.data.data);
     } catch (error) {
@@ -68,54 +72,60 @@ const StudentCreateform = () => {
       formData.country = Object.keys(selectedCountries).filter(
         (countryId) => selectedCountries[countryId]
       );
-  
+
       formData.exam = selectedExams.map((examName) => {
         const foundExam = exams.find((exam) => exam.name === examName);
         const scoreFieldName = `${examName}Score`;
-        return { u_id: foundExam ? foundExam.u_id : null, result: formData[scoreFieldName] };
+        return {
+          u_id: foundExam ? foundExam.u_id : null,
+          result: formData[scoreFieldName],
+        };
       });
-  
+
       selectedExams.forEach((examName) => {
         const scoreFieldName = `${examName}Score`;
         delete formData[scoreFieldName];
       });
-  
+
       console.log(formData);
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_NGROK_API}/student`, formData, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
-  
-  
-      console.log('Response:', response);
-  
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
+      if (response.data.statusCode === 201) {
+        window.location.reload();
+      }
+      console.log("Response:", response);
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
-      
-        <TextInput
-          label="Name"
-          id="name"
-          placeholder="Enter Name"
-          register={register}
-          required
-          error={errors.name}
-          errorMessage="Name is required"
-        />
+      <TextInput
+        label="Name"
+        id="name"
+        placeholder="Enter Name"
+        register={register}
+        required
+        error={errors.name}
+        errorMessage="Name is required"
+      />
 
-        <TextInput
-          id="email"
-          label="Email Address"
-          placeholder="Enter Email"
-          register={register}
-          required
-          error={errors.email}
-          errorMessage="Email is required"
-        />
-    
+      <TextInput
+        id="email"
+        label="Email Address"
+        placeholder="Enter Email"
+        register={register}
+        required
+        error={errors.email}
+        errorMessage="Email is required"
+      />
 
       <TextInput
         id="address"
@@ -147,13 +157,12 @@ const StudentCreateform = () => {
           { value: "Surat", label: "Surat" },
         ]}
         register={register}
-        required
         error={errors.role}
         errorMessage="Role is required"
       />
 
       <div className="form-field">
-        <label className="form-label">Country Selection</label>
+        <label className="form-label">Countries are you interested in?</label>
         <div className="form-sub-field">
           {countries.map((country) => (
             <div key={country.u_id} className="flex items-center mt-2">
@@ -176,7 +185,7 @@ const StudentCreateform = () => {
 
       <div className="form-field flex">
         <label className="form-label checkbox-label-student mt-4">
-          Is Exam Attended?
+          Is Exam Any Given?
         </label>
         <input
           type="checkbox"
@@ -188,7 +197,7 @@ const StudentCreateform = () => {
 
       {isExamAttended && (
         <div className="form-field">
-          <label className="form-label">Select Exams</label>
+          <label className="form-label">Given Exam</label>
           <div className="form-sub-field">
             {exams.map((exam) => (
               <div key={exam.u_id} className="flex">
@@ -225,7 +234,23 @@ const StudentCreateform = () => {
         </div>
       )}
 
-      <Button className="w-full" type="submit">Add User</Button>
+      <SelectInput
+        label="Other Services"
+        id="otherservices"
+        options={[
+          { value: "CANADA - PR", label: "CANADA - PR" },
+          { value: "USA H1 -B", label: "USA H1 -B" },
+          { value: "FREE GERMAN EDUCATION", label: "FREE GERMAN EDUCATION" },
+          { value: "OTHER", label: "OTHER" },
+        ]}
+        register={register}
+        error={errors.role}
+        errorMessage="Role is required"
+      />
+
+      <Button className="w-full" type="submit">
+        Add User
+      </Button>
     </form>
   );
 };

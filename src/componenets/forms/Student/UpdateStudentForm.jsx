@@ -164,6 +164,7 @@ const EditStudentCreateForm = ({ rowData }) => {
         <input
           type="text"
           id="name"
+          defaultValue={rowData.name}
           {...register("name", { required: true })}
           className={`form-input ${errors.name ? "input-error" : ""}`}
           placeholder="Enter Name"

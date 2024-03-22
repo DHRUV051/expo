@@ -14,7 +14,7 @@
 
 .form {
   width: 100%;
-  height: 100vh;
+  height: 70vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -72,7 +72,7 @@
 
 .form-field {
   position: relative;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .form-label {
@@ -277,7 +277,8 @@ sign-out{
 
   .form{
     width: 100%;
-    height: 100vh;
+    height: 100%;
+    margin-top: 50px;
   }
 
   .form-Student{
@@ -288,7 +289,7 @@ sign-out{
 
   .form-field {
     position: relative;
-    margin-bottom: 32px;
+    margin-bottom: 12px;
   }
   .Card {
     width: 100%;

@@ -18,6 +18,7 @@ import StudentCreateform from "@/componenets/forms/Student/Student-Create-form";
 import StudentView from "@/componenets/forms/Student/ViewStudent";
 import EditStudentCreateForm from "@/componenets/forms/Student/UpdateStudentForm";
 import SearchForm from "@/componenets/forms/search";
+import Loading from "@/componenets/globals/loading-page";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -32,20 +33,26 @@ const Page = () => {
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
+  const fetchUsers = async (currentPage, perPage) => {
+    console.log(
+      "response",
+      `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`
+    );
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`,
 
-  const fetchUsers = async () => {
-    // const response = await axios.get(
-    //   `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
-    //   { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    // );
-
-    // setData(response.data.data.studentData);
-    // setFilteredData(response.data.data.studentData);
-    // setLoading(false);
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+    );
+    console.log("response", response);
+    console.log("response", response.data.data.payload.pagination.total);
+    setTotalRows(response.data.data.payload.pagination.total);
+    setData(response.data.data.studentData);
+    setFilteredData(response.data.data.studentData);
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(currentPage, perPage);
   }, [currentPage, perPage]);
 
   const handleOpenEdit = (row) => {
@@ -66,6 +73,34 @@ const Page = () => {
   const handleOpenAdd = () => {
     setOpenAdd(!openAdd);
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePerRowsChange = async (newPerPage, page) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    const result = data.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.email.toLowerCase().includes(search.toLowerCase()) ||
+        item.u_id.toLowerCase().includes(search.toLowerCase()) ||
+        item.student_countries
+          .map((country) => country.country.name.toLowerCase())
+          .join(", ")
+          .includes(search.toLowerCase()) ||
+        item.student_exams
+          .map((exam) => exam.exam.name.toLowerCase())
+          .join(", ")
+          .includes(search.toLowerCase())
+      );
+    });
+    setFilteredData(result);
+  }, [search, data]);
 
   const columns = [
     {
@@ -141,7 +176,7 @@ const Page = () => {
     localStorage.getItem("role") === "Front Desk" ? (
     <>
       {loading ? (
-        <p>Loading...</p>
+        <Loading />
       ) : (
         <>
           <div className="lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10">
@@ -155,12 +190,12 @@ const Page = () => {
               className="scrollbar"
               selectableRows
               selectableRowsHighlight
-              // onSelectedRowsChange={handleRowSelected}
+              paginationTotalRows={totalRows}
+              paginationRowsPerPageOptions={[10, 25, 50, 100]}
               pagination
-              // paginationServer
-              // paginationTotalRows={totalRows}
-              // onChangeRowsPerPage={handlePerRowsChange}
-              // onChangePage={handlePageChange}
+              paginationServer
+              onChangeRowsPerPage={handlePerRowsChange}
+              onChangePage={handlePageChange}
               highlightOnHover
               subHeader
               subHeaderComponent={
