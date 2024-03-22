@@ -1,79 +1,79 @@
 export const name = () => {
-    return "Name";
-};
+  return 'Name'
+}
 
 export const email = () => {
-    return "Email";
+  return 'Email'
 }
 
 export const password = () => {
-    return "Password";
+  return 'Password'
 }
 
 export const address = () => {
-    return "Address";
+  return 'Address'
 }
 
 export const phone_number = () => {
-    return "Phone Number";
+  return 'Phone Number'
 }
 
 export const role = () => {
-    return "Role";
+  return 'Role'
 }
 
 export const login = () => {
-    return "Login";
+  return 'Login'
 }
 
 export const add = () => {
-    return "Add";
+  return 'Add'
 }
 
 export const update = () => {
-    return "Update";
+  return 'Update'
 }
 
 export const delete_ = () => {
-    return "Delete";
+  return 'Delete'
 }
 
 export const cancel = () => {
-    return "Cancel";
+  return 'Cancel'
 }
 
 export const action = () => {
-    return "Action"
+  return 'Action'
 }
 
 export const editEmployee = () => {
-    return "Edit Employee"
+  return 'Edit Employee'
 }
 
 export const deleteEmployee = () => {
-    return " Delete Confirmation"
+  return ' Delete Confirmation'
 }
 
 export const deleteEmployeeMessage = () => {
-    return "Are you sure you want to delete this user?"
+  return 'Are you sure you want to delete this user?'
 }
 
 export const cancel_ = () => {
-    return "Cancel";
+  return 'Cancel'
 }
 
 export const viewEmployee = () => {
-    return "View Employee"
+  return 'View Employee'
 }
 
 export const addEmployee = () => {
-    return "Add Employee"
+  return 'Add Employee'
 }
 
 export const editStudent = () => {
-    return "Edit Student"
+  return 'Edit Student'
 }
 
 export const addStudent = () => {
-    return "Add Student"
+  return 'Add Student'
 }

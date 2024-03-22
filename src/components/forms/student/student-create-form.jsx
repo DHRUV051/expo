@@ -17,7 +17,7 @@ const StudentCreateform = () => {
   const [selectedExams, setSelectedExams] = useState([])
   const [countries, setCountries] = useState([])
   const [exams, setExams] = useState([])
-  
+
   const [selectedCountries, setSelectedCountries] = useState({})
 
   const handleCheckboxChange = (countryId, isChecked) => {
