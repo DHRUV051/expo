@@ -120,7 +120,6 @@ const Page = () => {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/admin/${rowData.u_id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-      console.log('Delete Response', response)
       if (response.status === 200) {
         window.location.reload()
       }
