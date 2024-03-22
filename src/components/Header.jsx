@@ -12,10 +12,6 @@ import {
   IconButton,
   List,
   ListItem,
-  Menu,
-  MenuHandler,
-  MenuItem,
-  MenuList,
   Typography,
 } from "@material-tailwind/react";
 import { useState } from "react";
@@ -26,7 +22,6 @@ const Header = () => {
   const closeDrawer = () => setOpen(false);
   const pathname = usePathname();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -38,7 +33,8 @@ const Header = () => {
         console.log("token", localStorage.getItem("token"));
         localStorage.removeItem("token", null);
         localStorage.removeItem("role", null);
-        return router.push("/login");
+        
+return router.push("/login");
       }
     } catch (error) {
       console.log(error);

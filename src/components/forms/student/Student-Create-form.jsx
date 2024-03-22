@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import TextInput from "@/componenets/globals/TextInput";
+import TextInput from "@components/globals/TextInput";
 
-import SelectInput from "@/componenets/globals/SelectInput";
+import SelectInput from "@components/globals/SelectInput";
 import axios from "axios";
 import { Button } from "@material-tailwind/react";
 
@@ -76,7 +76,8 @@ const StudentCreateform = () => {
       formData.exam = selectedExams.map((examName) => {
         const foundExam = exams.find((exam) => exam.name === examName);
         const scoreFieldName = `${examName}Score`;
-        return {
+        
+return {
           u_id: foundExam ? foundExam.u_id : null,
           result: formData[scoreFieldName],
         };
@@ -88,6 +89,7 @@ const StudentCreateform = () => {
       });
 
       console.log(formData);
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
         formData,

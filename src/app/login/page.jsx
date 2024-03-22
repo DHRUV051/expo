@@ -1,6 +1,6 @@
 "use client"
 
-import LoginForm from "../../componenets/forms/login-form";
+import LoginForm from "@components/forms/login-form";
 import Logo from "../../../public/sk_logo.png";
 import Image from "next/image";
 import "@styles-page/login.module.css";

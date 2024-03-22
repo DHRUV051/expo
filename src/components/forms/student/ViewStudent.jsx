@@ -3,7 +3,8 @@ import "./StudentView.css"; // Import CSS file for styling
 
 const StudentView = ({ studentData }) => {
   console.log('studentData', studentData);
-  return (
+  
+return (
     <div className="student-info">
       <div className="">
         <fieldset className="border rounded-[5px] border-[rgb(20,23,24)] p-3">

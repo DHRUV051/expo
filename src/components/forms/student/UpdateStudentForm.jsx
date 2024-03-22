@@ -130,7 +130,8 @@ const EditStudentCreateForm = ({ rowData }) => {
       data.exam = selectedExams.map((examName) => {
         const foundExam = exams.find((exam) => exam.name === examName);
         const scoreFieldName = `${examName}Score`;
-        return {
+        
+return {
           u_id: foundExam ? foundExam.u_id : null,
           result: data[scoreFieldName],
         };

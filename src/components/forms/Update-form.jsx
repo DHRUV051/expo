@@ -1,24 +1,33 @@
 import { useState } from "react";
 import Button from "../globals/Button";
-import TextInput from "../globals/TextInput";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 import axios from "axios";
+import { MdError } from "react-icons/md";
 
 const UpdateForm = ({ rowData }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [role, setRole] = useState(rowData.role);
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.patch(`${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`, data, 
-      {headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }});
-      console.log('response',response);
-      if(response.data.statusCode === 201) {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      console.log("response", response);
+      if (response.data.statusCode === 201) {
         window.location.reload();
       }
-      
     } catch (error) {
       console.error("Error updating user data:", error);
     }
@@ -37,9 +46,7 @@ const UpdateForm = ({ rowData }) => {
           {...register("name", { required: true })}
           className={`form-input ${errors.name ? "input-error" : ""}`}
         />
-        {errors.name && (
-          <span className="error-message">Name is required</span>
-        )}
+        {errors.name && <span className="error-message">Name is required</span>}
       </div>
 
       <div className="form-field">
@@ -74,15 +81,15 @@ const UpdateForm = ({ rowData }) => {
             onClick={() => setShowPassword(!showPassword)}
             className="password-toggle"
           >
-             {showPassword ? <FaEyeSlash size={20} /> : <FaEye  size={20} />}
+            {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
           </button>
         </div>
         {errors.password && (
-        <span className="error-message">
-          <MdError className="error-icon" size={24} />
-          <span>"Password is Requires</span>
-        </span>
-      )}
+          <span className="error-message">
+            <MdError className="error-icon" size={24} />
+            <span>Password is Requires</span>
+          </span>
+        )}
       </div>
 
       <div className="form-field">
@@ -94,15 +101,15 @@ const UpdateForm = ({ rowData }) => {
           value={role}
           onChange={(e) => setRole(e.target.value)}
           {...register("role", { required: true })}
-          className={`form-input ${errors.role ? "input-error custom-select" : ""}`}
-        > 
+          className={`form-input ${
+            errors.role ? "input-error custom-select" : ""
+          }`}
+        >
           <option value="Admin">Admin</option>
           <option value="Front Desk">Front Desk</option>
           <option value="Representative">Representative</option>
         </select>
-        {errors.role && (
-          <span className="error-message">Role is required</span>
-        )}
+        {errors.role && <span className="error-message">Role is required</span>}
       </div>
 
       <Button type="submit">Update</Button>

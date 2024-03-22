@@ -4,14 +4,12 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Button, Input } from "@material-tailwind/react";
 import { useState } from "react";
-import StudentView from "./student/viewStudent";
 import "./search.css";
 
 const SearchForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
   } = useForm();
 
   const [loading, setLoading] = useState(false);
