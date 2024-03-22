@@ -35,7 +35,7 @@ const Page = () => {
   const [view, setView] = useState(false)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== undefined) {
       if (localStorage.getItem('role') === 'Admin' || localStorage.getItem('role') === 'Front Desk') {
         setView(true)
         fetchUsers(currentPage, perPage)
@@ -44,14 +44,19 @@ const Page = () => {
   }, [currentPage, perPage])
 
   const fetchUsers = async (currentPage, perPage) => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/student?page=${currentPage}&items_per_page=${perPage}`,
-      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-    )
-    setTotalRows(response.data.data.payload.pagination.total)
-    setData(response.data.data.studentData)
-    setFilteredData(response.data.data.studentData)
-    setLoading(false)
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/student?page=${currentPage}&items_per_page=${perPage}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      )
+      setTotalRows(response.data.data.payload.pagination.total)
+      setData(response.data.data.studentData)
+      setFilteredData(response.data.data.studentData)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching users:', error)
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
