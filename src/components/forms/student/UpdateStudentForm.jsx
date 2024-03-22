@@ -21,7 +21,7 @@ const EditStudentCreateForm = ({ rowData }) => {
     const fetchStudentData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_NGROK_API}/student/${rowData.u_id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/student/${rowData.u_id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -143,7 +143,7 @@ return {
       });
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/student`,
+        `${process.env.NEXT_PUBLIC_API_URL}/student`,
         data,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

@@ -74,7 +74,7 @@ const Page = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
+          `${process.env.NEXT_PUBLIC_API_URL}/admin`,
           { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
         );
 
@@ -119,7 +119,7 @@ const Page = () => {
   const handleDelete = async (rowData) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/admin/${rowData.u_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/${rowData.u_id}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }

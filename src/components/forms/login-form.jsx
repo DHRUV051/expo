@@ -21,7 +21,7 @@ const LoginForm = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/login`,
+        `${process.env.NEXT_PUBLIC_API_URL}/login`,
         data
       );
       setLoading(false);

@@ -19,7 +19,7 @@ const SearchForm = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/student/${data.search}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/student/${data.search}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

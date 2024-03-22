@@ -26,7 +26,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_NGROK_API}/logout`
+        `${process.env.NEXT_PUBLIC_API_URL}/logout`
       );
       console.log("response", response);
       if (response.data.statusCode === 200) {
