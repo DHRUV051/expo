@@ -2,7 +2,7 @@
 
 ### Required to run project
 
-Node : ">= v20.10.0" (LTS)
+Node : ">= v20.11.0" (LTS)
 
 ### Follow below steps to run project in local
 
