@@ -30,23 +30,23 @@ const Header = () => {
       );
       console.log("response", response);
       if (response.data.statusCode === 200) {
-        console.log("token", localStorage.getItem("token"));
-        localStorage.removeItem("token", null);
-        localStorage.removeItem("role", null);
-        
-return router.push("/login");
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        return router.push("/login");
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const isLocalStorageAvailable = typeof window !== "undefined" && window.localStorage;
+
   return (
     <>
       <div className="navbar">
         <Image src={Logo} alt="sk_logo" width={60} height={60} />
 
-        {localStorage.getItem("role") === "Admin" && (
+        {isLocalStorageAvailable && localStorage.getItem("role") === "Admin" && (
           <div className="desktopNavbar">
             <ul className="list">
               <li className="list-item">
@@ -73,40 +73,7 @@ return router.push("/login");
           </div>
         )}
 
-        {/* <div className="mobileNavbar">
-          <Menu>
-            <MenuHandler>
-              <Button variant="text" className="p-2 bg-none">
-                <MdMenu size={24} />
-              </Button>
-            </MenuHandler>
-            <MenuList>
-              <MenuItem color="black">
-                <Link
-                  href={"/admin"}
-                  className={clsx(pathname === "/admin" ? "active" : "")}
-                >
-                  Employee
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <Link
-                  href={"/admin/student"}
-                  className={clsx(
-                    pathname === "/admin/student" ? "active" : ""
-                  )}
-                >
-                  Student
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <Button onClick={() => handleLogout()}>Log Out</Button>
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </div> */}
-
-        {localStorage.getItem("role") === "Admin" && (
+        {isLocalStorageAvailable && localStorage.getItem("role") === "Admin" && (
           <div className="mobileNavbar">
             <button onClick={openDrawer}>
               <MdMenu size={30} />
@@ -170,16 +137,15 @@ return router.push("/login");
               </List>
             </Drawer>
           </div>
+        )} 
+
+        {isLocalStorageAvailable && (localStorage.getItem("role") === "Front Desk" || localStorage.getItem("role") === "Representative") && (
+          <Button className="" onClick={() => handleLogout()}>
+            Log Out
+          </Button>
         )}
 
-        {localStorage.getItem("role") === "Front Desk" ||
-          (localStorage.getItem("role") === "Representative" && (
-            <Button className="" onClick={() => handleLogout()}>
-              Log Out
-            </Button>
-          ))}
-
-        {localStorage.getItem("role") === "Admin" && (
+        {isLocalStorageAvailable && localStorage.getItem("role") === "Admin" && (
           <Button className="desktopNavbar" onClick={() => handleLogout()}>
             Log Out
           </Button>
