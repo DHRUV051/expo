@@ -14,8 +14,8 @@ import {
   DialogFooter,
   Typography
 } from '@material-tailwind/react'
-import UpdateForm from '@components/forms/update-form_1'
-import AddForm from '@components/forms/add-form_1'
+import UpdateForm from '@components/forms/update-form'
+import AddForm from '@components/forms/add-form'
 import ViewForm from '@components/view-form'
 
 const Page = () => {
