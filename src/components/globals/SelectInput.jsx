@@ -11,6 +11,7 @@ const SelectInput = ({
   errorMessage,
 }) => {
   const [selected, setSelected] = useState(false);
+  selected && console.log(selected);
 
   const handleSelectChange = (event) => {
     setSelected(event.target.value === "");

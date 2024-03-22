@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdError } from "react-icons/md";
-import clsx from "clsx";
 
 const TextInput = ({
   label,
@@ -16,7 +15,6 @@ const TextInput = ({
   pattern,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [item, setItem] = useState(value);
 
 
   const togglePasswordVisibility = () => {
@@ -31,8 +29,7 @@ const TextInput = ({
       <input
         type={showPassword ? "text" : type}
         id={id}
-        value={item}
-        onChange={(newvalue) => console.log(newvalue)}
+        value={value}
         placeholder={placeholder}
         {...register(id, {
           required: required && errorMessage,

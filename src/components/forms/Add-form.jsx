@@ -1,5 +1,4 @@
 "use client";
-import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import TextInput from "../globals/TextInput";
 import Button from "../globals/Button";
@@ -12,7 +11,6 @@ const AddForm = () => {
     formState: { errors },
   } = useForm();
 
-  const router = useRouter();
 
   const onSubmit = async (data) => {
     try {

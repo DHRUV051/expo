@@ -1,26 +1,35 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { useEffect, useRef } from "react";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
+  const routerRef = useRef(router); // Use a ref for router
 
-  if (
-    localStorage.getItem("token") &&
-    localStorage.getItem("role") === "Admin"
-  ) {
-    router.push("/dashboard");
-  } else if (
-    localStorage.getItem("token") &&
-    localStorage.getItem("role") === "Representative"
-  ) {
-    router.push("/dashboard/student");
-  } else if (
-    localStorage.getItem("token") &&
-    localStorage.getItem("role") === "Front-Desk"
-  ) {
-    router.push("/dashboard/student");
-  }
+  useEffect(() => {
+    const redirectToDashboard = () => {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+
+      if (token) {
+        switch (role) {
+          case "Admin":
+            routerRef.current.push("/dashboard");
+            break;
+          case "Representative":
+          case "Front-Desk":
+            routerRef.current.push("/dashboard/student");
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
+    redirectToDashboard();
+  }, []); // No dependency array since we're using a ref
+
+  return null;
 };
 
-export default page;
+export default Page;

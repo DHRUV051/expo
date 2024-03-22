@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import DataTable from "react-data-table-component";
-import axios from "axios";
+import React, { useState, useEffect } from 'react'
+import DataTable from 'react-data-table-component'
+import axios from 'axios'
 import {
   Dialog,
   DialogBody,
@@ -9,344 +9,322 @@ import {
   Button,
   DialogFooter,
   Typography,
-  IconButton,
-  Input,
-} from "@material-tailwind/react";
-import { FaEye } from "react-icons/fa";
-import { MdDelete, MdEdit } from "react-icons/md";
-import StudentCreateform from "@/componenets/forms/student/student-Create-form";
-import StudentView from "@/componenets/forms/student/viewStudent";
-import EditStudentCreateForm from "@/componenets/forms/student/updateStudentForm";
-import SearchForm from "@/componenets/forms/search";
-import Loading from "@/componenets/globals/loading-page";
+  IconButton
+} from '@material-tailwind/react'
+import { FaEye } from 'react-icons/fa'
+import { MdDelete, MdEdit } from 'react-icons/md'
+import StudentCreateform from '@components/forms/student/student-Create-form'
+import StudentView from '@components/forms/student/viewStudent'
+import EditStudentCreateForm from '@components/forms/student/updateStudentForm'
+import SearchForm from '@components/forms/search'
+import Loading from '@components/globals/loading-page'
 
 const Page = () => {
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openView, setOpenView] = useState(false);
-  const [openAdd, setOpenAdd] = useState(false);
-  const [totalRows, setTotalRows] = useState(0);
-  const [perPage, setPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const fetchUsers = async (currentPage, perPage) => {
-    console.log(
-      "response",
-      `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`
-    );
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`,
-
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    );
-    console.log("response", response);
-    console.log("response", response.data.data.payload.pagination.total);
-    setTotalRows(response.data.data.payload.pagination.total);
-    setData(response.data.data.studentData);
-    setFilteredData(response.data.data.studentData);
-    setLoading(false);
-  };
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [data, setData] = useState([])
+  const [filteredData, setFilteredData] = useState([])
+  const [openEdit, setOpenEdit] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
+  const [openView, setOpenView] = useState(false)
+  const [openAdd, setOpenAdd] = useState(false)
+  const [totalRows, setTotalRows] = useState(0)
+  const [perPage, setPerPage] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedRow, setSelectedRow] = useState(null)
 
   useEffect(() => {
-    fetchUsers(currentPage, perPage);
-  }, [currentPage, perPage]);
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_NGROK_API}/student?page=${currentPage}&items_per_page=${perPage}`,
+          {
+            headers: { Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : null}` }
+          }
+        )
+        setTotalRows(response.data.data.payload.pagination.total)
+        setData(response.data.data.studentData)
+        setFilteredData(response.data.data.studentData)
+      } catch (error) {
+        console.error('Error fetching student data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const handleOpenEdit = (row) => {
-    setSelectedRow(row);
-    setOpenEdit(!openEdit);
-  };
+    fetchData()
+  }, [currentPage, perPage])
 
-  const handleOpenDelete = (row) => {
-    setSelectedRow(row);
-    setOpenDelete(!openDelete);
-  };
+  const handleOpenEdit = row => {
+    setSelectedRow(row)
+    setOpenEdit(!openEdit)
+  }
 
-  const handleOpenView = (row) => {
-    setSelectedRow(row);
-    setOpenView(!openView);
-  };
+  const handleOpenDelete = row => {
+    setSelectedRow(row)
+    setOpenDelete(!openDelete)
+  }
+
+  const handleOpenView = row => {
+    setSelectedRow(row)
+    setOpenView(!openView)
+  }
 
   const handleOpenAdd = () => {
-    setOpenAdd(!openAdd);
-  };
+    setOpenAdd(!openAdd)
+  }
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  const handlePageChange = page => {
+    setCurrentPage(page)
+  }
 
   const handlePerRowsChange = async (newPerPage, page) => {
-    setPerPage(newPerPage);
-    setCurrentPage(page);
-  };
+    setPerPage(newPerPage)
+    setCurrentPage(page)
+  }
 
   useEffect(() => {
-    const result = data.filter((item) => {
+    const result = data.filter(item => {
       return (
         item.name.toLowerCase().includes(search.toLowerCase()) ||
         item.email.toLowerCase().includes(search.toLowerCase()) ||
         item.u_id.toLowerCase().includes(search.toLowerCase()) ||
         item.student_countries
-          .map((country) => country.country.name.toLowerCase())
-          .join(", ")
+          .map(country => country.country.name.toLowerCase())
+          .join(', ')
           .includes(search.toLowerCase()) ||
         item.student_exams
-          .map((exam) => exam.exam.name.toLowerCase())
-          .join(", ")
+          .map(exam => exam.exam.name.toLowerCase())
+          .join(', ')
           .includes(search.toLowerCase())
-      );
-    });
-    setFilteredData(result);
-  }, [search, data]);
+      )
+    })
+    setFilteredData(result)
+  }, [search, data])
 
   const columns = [
     {
-      name: "Id",
-      selector: (row) => row.u_id,
-      sortable: true,
+      name: 'Id',
+      selector: row => row.u_id,
+      sortable: true
     },
     {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
+      name: 'Name',
+      selector: row => row.name,
+      sortable: true
     },
     {
-      name: "Email",
-      selector: (row) => row.email,
+      name: 'Email',
+      selector: row => row.email
     },
     {
-      name: "Countries",
-      selector: (row) =>
-        row.student_countries.map((country) => country.country.name).join(", "),
-      sortable: true,
+      name: 'Countries',
+      selector: row => row.student_countries.map(country => country.country.name).join(', '),
+      sortable: true
     },
     {
-      name: "Action",
-      cell: (row) => {
+      name: 'Action',
+      cell: row => {
         return (
           <>
-            <div className="flex space-x-4">
+            <div className='flex space-x-4'>
               <button onClick={() => handleOpenView(row)}>
-                <FaEye size={20} className="text-[rgb(102,102,102)]" />
+                <FaEye size={20} className='text-[rgb(102,102,102)]' />
               </button>
-
               <button onClick={() => handleOpenEdit(row)}>
                 <MdEdit size={20} />
               </button>
-
               <button onClick={() => handleOpenDelete(row)}>
-                <MdDelete size={20} className="text-red-500" />
+                <MdDelete size={20} className='text-red-500' />
               </button>
             </div>
           </>
-        );
-      },
-    },
-  ];
+        )
+      }
+    }
+  ]
 
   const tableCustomStyles = {
     headCells: {
       style: {
-        fontSize: "20px",
-        fontWeight: "bold",
-        paddingLeft: "0 8px",
-      },
+        fontSize: '20px',
+        fontWeight: 'bold',
+        paddingLeft: '0 8px'
+      }
     },
     cells: {
       style: {
-        paddingLeft: "0 8px",
-        justifyContent: "start",
-        fontSize: "16px",
-        fontWeight: "400",
-      },
+        paddingLeft: '0 8px',
+        justifyContent: 'start',
+        fontSize: '16px',
+        fontWeight: '400'
+      }
     },
     header: {
       style: {
-        fontSize: "30px",
+        fontSize: '30px',
         fontWeight: 700,
-        paddingLeft: "0px 8px",
-      },
-    },
-  };
+        paddingLeft: '0px 8px'
+      }
+    }
+  }
 
-  return localStorage.getItem("role") === "Admin" ||
-    localStorage.getItem("role") === "Front Desk" ? (
+  return (
     <>
-      {loading ? (
-        <Loading />
+      {(typeof window !== 'undefined' && localStorage.getItem('role') === 'Admin') ||
+      localStorage.getItem('role') === 'Front Desk' ? (
+        <>
+          {loading ? (
+            <Loading />
+          ) : (
+            <div className='lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10'>
+              <DataTable
+                title='Student'
+                columns={columns}
+                progressPending={loading}
+                data={filteredData}
+                fixedHeader
+                fixedHeaderScrollHeight='600px'
+                className='scrollbar'
+                selectableRows
+                selectableRowsHighlight
+                paginationTotalRows={totalRows}
+                paginationRowsPerPageOptions={[10, 25, 50, 100]}
+                pagination
+                paginationServer
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+                highlightOnHover
+                subHeader
+                subHeaderComponent={
+                  <input
+                    type='text'
+                    placeholder='Search'
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className='lg:w-[250px] sm:w-full md:w-[250px] form-input'
+                  />
+                }
+                actions={<Button onClick={() => setOpenAdd(!openAdd)}>Add</Button>}
+                customStyles={tableCustomStyles}
+              />
+            </div>
+          )}
+
+          {/* Edit Student Modal */}
+          <Dialog open={openEdit} handler={handleOpenEdit}>
+            <DialogHeader className='justify-between'>
+              <Typography variant='h5' color='blue-gray'>
+                Edit Student
+              </Typography>
+              <IconButton variant='text' color='blue-gray' onClick={handleOpenEdit}>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={2}
+                  stroke='currentColor'
+                  className='h-5 w-5'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                </svg>
+              </IconButton>
+            </DialogHeader>
+            <DialogBody className='overflow-scroll h-[600px] scrollbar'>
+              <EditStudentCreateForm rowData={selectedRow} />
+            </DialogBody>
+          </Dialog>
+
+          {/* Delete Student Modal */}
+          <Dialog open={openDelete} handler={handleOpenDelete}>
+            <DialogHeader className='justify-between'>
+              <Typography variant='h5' color='blue-gray'>
+                Delete Student
+              </Typography>
+              <IconButton variant='text' color='blue-gray' onClick={handleOpenDelete}>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={2}
+                  stroke='currentColor'
+                  className='h-5 w-5'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                </svg>
+              </IconButton>
+            </DialogHeader>
+            <DialogBody>
+              <p>Are you sure you want to delete this Student?</p>
+            </DialogBody>
+            <DialogFooter>
+              <Button variant='text' color='green' onClick={handleOpenDelete}>
+                <span>Cancel</span>
+              </Button>
+              <Button variant='gradient' color='red' onClick={handleOpenDelete}>
+                <span>Delete</span>
+              </Button>
+            </DialogFooter>
+          </Dialog>
+
+          {/* View Student Modal */}
+          <Dialog open={openView} handler={handleOpenView}>
+            <DialogHeader className='justify-between'>
+              <Typography variant='h5' color='blue-gray'>
+                View Student
+              </Typography>
+              <IconButton variant='text' color='blue-gray' onClick={handleOpenView}>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={2}
+                  stroke='currentColor'
+                  className='h-5 w-5'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                </svg>
+              </IconButton>
+            </DialogHeader>
+            <DialogBody>
+              <StudentView studentData={selectedRow} />
+            </DialogBody>
+          </Dialog>
+
+          {/* Add Student Modal */}
+          <Dialog open={openAdd} handler={handleOpenAdd}>
+            <DialogHeader className='justify-between'>
+              <Typography variant='h5' color='blue-gray'>
+                Add Student
+              </Typography>
+              <IconButton variant='text' color='blue-gray' onClick={handleOpenAdd}>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={2}
+                  stroke='currentColor'
+                  className='h-5 w-5'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                </svg>
+              </IconButton>
+            </DialogHeader>
+            <DialogBody className='h-[500px] overflow-scroll scrollbar '>
+              <StudentCreateform />
+            </DialogBody>
+          </Dialog>
+        </>
       ) : (
         <>
-          <div className="lg:my-[50px] my-[20px] px-[20px] lg:px-[100px] z-10">
-            <DataTable
-              title="Student"
-              columns={columns}
-              progressPending={loading}
-              data={filteredData}
-              fixedHeader
-              fixedHeaderScrollHeight="600px"
-              className="scrollbar"
-              selectableRows
-              selectableRowsHighlight
-              paginationTotalRows={totalRows}
-              paginationRowsPerPageOptions={[10, 25, 50, 100]}
-              pagination
-              paginationServer
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              highlightOnHover
-              subHeader
-              subHeaderComponent={
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="lg:w-[250px] sm:w-full md:w-[250px] form-input"
-                />
-              }
-              actions={
-                <Button onClick={() => setOpenAdd(!openAdd)}>Add</Button>
-              }
-              customStyles={tableCustomStyles}
-            />
+          <div className='flex mt-[50px] px-[30px] md:px-[50px] '>
+            <SearchForm />
           </div>
         </>
       )}
-
-      {/* Edit Student Modal */}
-      <Dialog open={openEdit} handler={handleOpenEdit}>
-        <DialogHeader className="justify-between">
-          <Typography variant="h5" color="blue-gray">
-            Edit Student
-          </Typography>
-          <IconButton variant="text" color="blue-gray" onClick={handleOpenEdit}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </IconButton>
-        </DialogHeader>
-        <DialogBody className="overflow-scroll h-[600px] scrollbar">
-          <EditStudentCreateForm rowData={selectedRow} />
-        </DialogBody>
-      </Dialog>
-
-      {/* Delete Student Modal */}
-      <Dialog open={openDelete} handler={handleOpenDelete}>
-        <DialogHeader className="justify-between">
-          <Typography variant="h5" color="blue-gray">
-            Delete Student
-          </Typography>
-          <IconButton
-            variant="text"
-            color="blue-gray"
-            onClick={handleOpenDelete}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </IconButton>
-        </DialogHeader>
-        <DialogBody>
-          <p>Are you sure you want to delete this Student?</p>
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="text" color="green" onClick={handleOpenDelete}>
-            <span>Cancel</span>
-          </Button>
-          <Button variant="gradient" color="red" onClick={handleOpenDelete}>
-            <span>Delete</span>
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
-      {/* View Student Modal */}
-      <Dialog open={openView} handler={handleOpenView}>
-        <DialogHeader className="justify-between">
-          <Typography variant="h5" color="blue-gray">
-            View Student
-          </Typography>
-          <IconButton variant="text" color="blue-gray" onClick={handleOpenView}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </IconButton>
-        </DialogHeader>
-        <DialogBody>
-          <StudentView studentData={selectedRow} />
-        </DialogBody>
-      </Dialog>
-
-      {/* Add Student Modal */}
-      <Dialog open={openAdd} handler={handleOpenAdd}>
-        <DialogHeader className="justify-between">
-          <Typography variant="h5" color="blue-gray">
-            Add Student
-          </Typography>
-          <IconButton variant="text" color="blue-gray" onClick={handleOpenAdd}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </IconButton>
-        </DialogHeader>
-        <DialogBody className="h-[500px] overflow-scroll scrollbar ">
-          <StudentCreateform />
-        </DialogBody>
-      </Dialog>
     </>
-  ) : (
-    <>
-      <div className="flex mt-[50px] px-[30px] md:px-[50px] ">
-        <SearchForm />
-      </div>
-    </>
-  );
-};
+  )
+}
 
-export default Page;
+export default Page

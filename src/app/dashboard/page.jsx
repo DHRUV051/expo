@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-import Loading from "@/componenets/globals/loading-page";
+import Loading from "@components/globals/loading-page";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { FaArrowLeft, FaArrowRight, FaEye } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import {
   Dialog,
   DialogBody,
@@ -14,15 +14,11 @@ import {
   DialogFooter,
   Typography,
 } from "@material-tailwind/react";
-import UpdateForm from "@/componenets/forms/Update-form";
-import AddForm from "@/componenets/forms/Add-form";
-import ViewForm from "@/componenets/ViewForm";
+import UpdateForm from "@components/forms/Update-form";
+import AddForm from "@components/forms/Add-form";
+import ViewForm from "@components/ViewForm";
 
 const Page = () => {
-  if (localStorage.getItem("role") !== "Admin") {
-    return router.push("/dashboard/student");
-  }
-
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -32,35 +28,6 @@ const Page = () => {
   const [openView, setOpenView] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [active, setActive] = React.useState(1);
-
-
-  const handleOpenEdit = (row) => {
-    setSelectedRow(row);
-    setOpenEdit(!openEdit);
-  };
-
-  const handleOpenDelete = (row) => {
-    setSelectedRow(row);
-    setOpenDelete(!openDelete);
-  };
-
-  const handleOpenView = (row) => {
-    setSelectedRow(row);
-    setOpenView(!openView);
-  };
-
-  const handleOpenAdd = () => {
-    setOpenAdd(!openAdd);
-  };
-
-  
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, []);
 
   const columns = [
     {
@@ -103,6 +70,52 @@ const Page = () => {
     },
   ];
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
+          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        );
+
+        setData(response.data.data.adminData);
+        setFilteredData(response.data.adminData);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const result = data.filter((item) => {
+      return item.name.toLowerCase().includes(search.toLowerCase());
+    });
+    setFilteredData(result);
+  }, [search, data]);
+
+  const handleOpenEdit = (row) => {
+    setSelectedRow(row);
+    setOpenEdit(!openEdit);
+  };
+
+  const handleOpenDelete = (row) => {
+    setSelectedRow(row);
+    setOpenDelete(!openDelete);
+  };
+
+  const handleOpenView = (row) => {
+    setSelectedRow(row);
+    setOpenView(!openView);
+  };
+
+  const handleOpenAdd = () => {
+    setOpenAdd(!openAdd);
+  };
+
   const handleDelete = async (rowData) => {
     try {
       const response = await axios.delete(
@@ -118,29 +131,7 @@ const Page = () => {
     } catch (error) {
       console.error("Error deleting user data:", error);
     }
-  };
-
-  const fetchData = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_NGROK_API}/admin`,
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-    );
-
-    setData(response.data.data.adminData);
-    setFilteredData(response.data.adminData);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const result = data.filter((item) => {
-      return item.name.toLowerCase().includes(search.toLowerCase());
-    });
-    setFilteredData(result);
-  }, [search, data]);
+  }; 
 
   const tableCustomStyles = {
     headCells: {
