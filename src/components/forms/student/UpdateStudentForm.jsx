@@ -83,7 +83,7 @@ const EditStudentCreateForm = ({ rowData }) => {
     const fetchData = async () => {
       try {
         const countryResponse = await axios.get(
-          "https://9acb-2405-201-2006-7d89-c5b8-f9d2-266c-56b9.ngrok-free.app/country",
+          `${process.env.NEXT_PUBLIC_API_URL}/country`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -93,7 +93,7 @@ const EditStudentCreateForm = ({ rowData }) => {
         setCountries(countryResponse.data.data);
 
         const examResponse = await axios.get(
-          "https://9acb-2405-201-2006-7d89-c5b8-f9d2-266c-56b9.ngrok-free.app/exam",
+          `${process.env.NEXT_PUBLIC_API_URL}/exam`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
