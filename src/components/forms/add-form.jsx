@@ -1,7 +1,7 @@
 'use client'
 import { useForm } from 'react-hook-form'
 import TextInput from '../globals/text-input'
-import Button from '../globals/Button'
+import Button from '../globals/button1'
 import axios from 'axios'
 
 const AddForm = () => {
