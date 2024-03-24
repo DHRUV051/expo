@@ -34,23 +34,19 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedRow, setSelectedRow] = useState(null)
   const [view, setView] = useState(false)
-  let localStorageToken = null;
-  let localStorageRole = null;
 
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    if (typeof window !== undefined) {
-      localStorageRole = localStorage.getItem('role')
-      localStorageToken = localStorage.getItem('token')
+    if (typeof window !== 'undefined') {
+      const localStorageRole = localStorage.getItem('role')
+      const localStorageToken = localStorage.getItem('token')
+      if (!localStorageToken || !localStorageRole) {
+        router.push('/login')
+      }
     }
-  }, [])
-
-  if(!localStorageToken || !localStorageRole) {
-    router.push('/login');
-  }
-
-
+  }, [router])
+  
   useEffect(() => {
     if (typeof window !== undefined) {
       if (localStorage.getItem('role') === 'Admin' || localStorage.getItem('role') === 'Front Desk') {
