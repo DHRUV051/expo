@@ -17,6 +17,7 @@ import {
 import UpdateForm from '@components/forms/update-form'
 import AddForm from '@components/forms/add-form'
 import ViewForm from '@components/view-form'
+import { useRouter } from 'next/navigation'
 
 const Page = () => {
   const [loading, setLoading] = useState(true)
@@ -28,6 +29,22 @@ const Page = () => {
   const [openView, setOpenView] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null)
+  let localStorageToken = null;
+  let localStorageRole = null;
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== undefined) {
+      localStorageRole = localStorage.getItem('role')
+      localStorageToken = localStorage.getItem('token')
+    }
+  }, [])
+
+  if(!localStorageToken || !localStorageRole) {
+    router.push('/login');
+  }
+
 
   const columns = [
     {

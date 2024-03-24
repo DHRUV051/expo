@@ -18,6 +18,7 @@ import StudentView from '@components/forms/student/view-student'
 import EditStudentCreateForm from '@components/forms/student/update-student-form'
 import SearchForm from '@components/forms/search'
 import Loading from '@components/globals/loading-page'
+import { useRouter } from 'next/navigation'
 
 const Page = () => {
   const [loading, setLoading] = useState(true)
@@ -33,6 +34,22 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedRow, setSelectedRow] = useState(null)
   const [view, setView] = useState(false)
+  let localStorageToken = null;
+  let localStorageRole = null;
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== undefined) {
+      localStorageRole = localStorage.getItem('role')
+      localStorageToken = localStorage.getItem('token')
+    }
+  }, [])
+
+  if(!localStorageToken || !localStorageRole) {
+    router.push('/login');
+  }
+
 
   useEffect(() => {
     if (typeof window !== undefined) {
