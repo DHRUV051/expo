@@ -29,19 +29,21 @@ const Page = () => {
   const [openView, setOpenView] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null)
+  const [pageLoaded, setPageLoaded] = useState(false)
 
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const localStorageRole = localStorage.getItem('role')
       const localStorageToken = localStorage.getItem('token')
       if (!localStorageToken || !localStorageRole) {
-        router.push('/login');
+        router.push('/login')
+      } else {
+        setPageLoaded(true)
       }
     }
   }, [router])
-
 
   const columns = [
     {
@@ -169,7 +171,7 @@ const Page = () => {
 
   return (
     <>
-      {loading ? (
+      {!pageLoaded ? (
         <Loading suppressHydrationWarning></Loading>
       ) : (
         <>
