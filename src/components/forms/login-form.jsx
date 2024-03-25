@@ -27,7 +27,7 @@ const LoginForm = () => {
 
       if (localStorage.getItem('role') === 'Admin') {
         router.push('/dashboard')
-      } else if (localStorage.getItem('role') === 'Front-Desk') {
+      } else if (localStorage.getItem('role') === 'Front Desk') {
         router.push('/dashboard/student')
       } else if (localStorage.getItem('role') === 'Representative') {
         router.push('/dashboard/student')
