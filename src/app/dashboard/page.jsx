@@ -43,7 +43,7 @@ const Page = () => {
         router.push('/dashboard/student')
       }
     }
-  }, [router])
+  }, [])
 
 
   const columns = [
