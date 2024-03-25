@@ -33,6 +33,19 @@ const Page = () => {
   const { handleSubmit, register } = useForm()
   const [selectedFile, setSelectedFile] = useState(null)
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const localStorageRole = localStorage.getItem('role')
+      const localStorageToken = localStorage.getItem('token')
+      if (!localStorageToken === null || !localStorageRole) {
+        router.push('/login')
+      }else if(localStorageRole !== 'Admin'){
+        router.push('/dashboard/student')
+      }
+    }
+  }, [router])
+
+
   const columns = [
     {
       name: 'Name',
@@ -188,7 +201,7 @@ const Page = () => {
 
   return (
     <>
-      {!pageLoaded ? (
+      { loading ? (
         <Loading suppressHydrationWarning></Loading>
       ) : (
         <>
