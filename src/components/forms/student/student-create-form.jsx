@@ -254,7 +254,6 @@ const StudentCreateform = () => {
                 checked={selectedServices.includes(service.u_id)}
                 onChange={e => handleServiceCheckboxChange(service.u_id, e.target.checked)}
                 className='checkbox-icon'
-
               />
               <label htmlFor={service.name} className='checkbox-label'>
                 {service.name}

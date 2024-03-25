@@ -145,13 +145,14 @@ const Page = () => {
     try {
       const fileData = new FormData()
       fileData.set('files', selectedFile)
+
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student-excel-upload`, fileData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
-      console.log('response', response);
+      console.log('response', response)
       if (response.status === 201) {
         setOpenUpload(false)
       }

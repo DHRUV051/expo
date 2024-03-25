@@ -22,9 +22,8 @@ const StudentView = ({ studentData }) => {
           </p>
 
           <p className='info-item font-bold'>
-          Qualification: <span className='font-semibold'>{studentData.qualification}</span>
+            Qualification: <span className='font-semibold'>{studentData.qualification}</span>
           </p>
-
         </fieldset>
       </div>
 
@@ -73,9 +72,6 @@ const StudentView = ({ studentData }) => {
               ))}
             </ul>
           </div> */}
-
-
-
         </fieldset>
       </div>
     </div>

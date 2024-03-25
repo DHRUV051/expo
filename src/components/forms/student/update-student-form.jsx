@@ -249,7 +249,7 @@ const EditStudentCreateForm = ({ rowData }) => {
           defaultValue={rowData.qualification}
           {...register('qualification')}
           className={`form-input ${errors.branch ? 'input-error' : ''}`}
-        > 
+        >
           <option value='10th'>10th</option>
           <option value='12th'>12th</option>
           <option value='bachelor'>Bachelor</option>
