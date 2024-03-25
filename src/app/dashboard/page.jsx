@@ -31,11 +31,8 @@ const Page = () => {
   const [openAdd, setOpenAdd] = useState(false)
   const [openUpload, setOpenUpload] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null)
-  const [pageLoaded, setPageLoaded] = useState(true)
   const { handleSubmit, register } = useForm()
   const [selectedFile, setSelectedFile] = useState(null)
-
-  const router = useRouter()
 
   const columns = [
     {

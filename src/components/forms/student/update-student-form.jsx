@@ -16,7 +16,6 @@ const EditStudentCreateForm = ({ rowData }) => {
   const [countries, setCountries] = useState([])
   const [exams, setExams] = useState([])
   const [selectedCountries, setSelectedCountries] = useState({})
-  const [qualification, setQualification] = useState('')
   const [services, setServices] = useState([])
   const [selectedServices, setSelectedServices] = useState([])
   console.log('rowData', rowData)
