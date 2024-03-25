@@ -20,6 +20,11 @@ const StudentView = ({ studentData }) => {
           <p className='info-item font-bold'>
             Branch: <span className='font-semibold'>{studentData.branch}</span>
           </p>
+
+          <p className='info-item font-bold'>
+          Qualification: <span className='font-semibold'>{studentData.qualification}</span>
+          </p>
+
         </fieldset>
       </div>
 
@@ -56,6 +61,21 @@ const StudentView = ({ studentData }) => {
               ))}
             </ul>
           </div>
+
+          {/* <div className='countries-list'>
+            <h3 className='font-bold'>Other Service:</h3>
+            <ul className='sub-list'>
+              {studentData.service.map((service, index) => (
+                <li key={service.u_id} className='font-bold list'>
+                  {service.name}
+                  {index !== studentData.student_countries.length - 1 && ','}
+                </li>
+              ))}
+            </ul>
+          </div> */}
+
+
+
         </fieldset>
       </div>
     </div>

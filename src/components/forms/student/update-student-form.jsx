@@ -16,7 +16,10 @@ const EditStudentCreateForm = ({ rowData }) => {
   const [countries, setCountries] = useState([])
   const [exams, setExams] = useState([])
   const [selectedCountries, setSelectedCountries] = useState({})
-
+  const [qualification, setQualification] = useState('')
+  const [services, setServices] = useState([])
+  const [selectedServices, setSelectedServices] = useState([])
+  console.log('rowData', rowData)
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
@@ -39,6 +42,7 @@ const EditStudentCreateForm = ({ rowData }) => {
           'exam',
           studentData.student_exams.map(exam => exam.exam.name)
         )
+        setValue('qualification', studentData.qualification)
 
         studentData.student_exams.forEach(exam => {
           const scoreFieldName = `${exam.name}Score`
@@ -58,6 +62,13 @@ const EditStudentCreateForm = ({ rowData }) => {
 
         // Set exam attended state
         setIsExamAttended(studentData.is_exam_attended)
+
+        const selectedServicesData = {}
+        studentData.service.forEach(service => {
+          selectedServicesData[service.u_id] = true
+        })
+        studentData.service.map(service => service.u_id)
+        setSelectedServices(selectedServicesData)
       } catch (error) {
         console.error('Error fetching student data:', error)
       }
@@ -90,6 +101,13 @@ const EditStudentCreateForm = ({ rowData }) => {
           }
         })
         setExams(examResponse.data.data)
+
+        const serviceResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/service`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        setServices(serviceResponse.data.data)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -106,6 +124,13 @@ const EditStudentCreateForm = ({ rowData }) => {
     setSelectedExams(prevSelectedExams =>
       isChecked ? [...prevSelectedExams, examName] : prevSelectedExams.filter(name => name !== examName)
     )
+  }
+
+  const handleServiceCheckboxChange = (serviceId, isChecked) => {
+    setSelectedServices(prevSelectedServices => ({
+      ...prevSelectedServices,
+      [serviceId]: isChecked
+    }))
   }
 
   const onSubmit = async data => {
@@ -205,7 +230,7 @@ const EditStudentCreateForm = ({ rowData }) => {
         <select
           id='branch'
           defaultValue={rowData.branch}
-          {...register('branch', { required: true })}
+          {...register('branch')}
           className={`form-input ${errors.branch ? 'input-error' : ''}`}
         >
           <option value='Anand'>Anand</option>
@@ -217,7 +242,25 @@ const EditStudentCreateForm = ({ rowData }) => {
       </div>
 
       <div className='form-field'>
-        <label className='form-label'>Country Selection</label>
+        <label htmlFor='branch' className='form-label'>
+          Qualification
+        </label>
+        <select
+          id='qualification'
+          defaultValue={rowData.qualification}
+          {...register('qualification')}
+          className={`form-input ${errors.branch ? 'input-error' : ''}`}
+        > 
+          <option value='10th'>10th</option>
+          <option value='12th'>12th</option>
+          <option value='bachelor'>Bachelor</option>
+          <option value='master'>Master</option>
+        </select>
+        {errors.branch && <span className='error-message'>Branch is required</span>}
+      </div>
+
+      <div className='form-field'>
+        <label className='form-label'>Countries are you interested in?</label>
         <div className='form-sub-field'>
           {countries.map(country => (
             <div key={country.u_id} className='flex items-center mt-2'>
@@ -237,7 +280,7 @@ const EditStudentCreateForm = ({ rowData }) => {
       </div>
 
       <div className='form-field flex'>
-        <label className='form-label checkbox-label-student mt-4'>Is Exam Attended?</label>
+        <label className='form-label checkbox-label-student mt-4'>Is Exam Given?</label>
         <input
           type='checkbox'
           id='examAttended'
@@ -249,7 +292,7 @@ const EditStudentCreateForm = ({ rowData }) => {
 
       {isExamAttended && (
         <div className='form-field'>
-          <label className='form-label'>Select Exams</label>
+          <label className='form-label'>Given Exams</label>
           <div className='form-sub-field'>
             {exams.map(exam => (
               <div key={exam.u_id} className='flex'>
@@ -271,6 +314,7 @@ const EditStudentCreateForm = ({ rowData }) => {
             <div key={exam.u_id} className='form-field mt-4'>
               {selectedExams.includes(exam.name) && (
                 <>
+                  <label className='form-label'>Overall {exam.name} Score</label>
                   <input
                     type='text'
                     id={`${exam.name}Score`}
@@ -287,8 +331,28 @@ const EditStudentCreateForm = ({ rowData }) => {
         </div>
       )}
 
+      <div className='form-field'>
+        <label className='form-label'>Services</label>
+        <div className='form-sub-field-select'>
+          {services.map(service => (
+            <div key={service.u_id} className='flex items-center mt-2'>
+              <input
+                type='checkbox'
+                id={service.name}
+                checked={selectedServices[service.u_id]} // Check if service ID is in selectedServices array
+                onChange={e => handleServiceCheckboxChange(service.u_id, e.target.checked)}
+                className='checkbox-icon'
+              />
+              <label htmlFor={service.name} className='checkbox-label'>
+                {service.name}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <Button className='w-full' type='submit'>
-        Add User
+        Edit Student
       </Button>
     </form>
   )

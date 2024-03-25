@@ -57,7 +57,7 @@ const Header = () => {
           </div>
         )}
 
-        {isLocalStorageAvailable && localStorage.getItem('role') === 'Admin' && (
+        {isLocalStorageAvailable && localStorage.getItem('role') === 'Admin'  && (
           <div className='mobileNavbar'>
             <button onClick={openDrawer}>
               <MdMenu size={30} />

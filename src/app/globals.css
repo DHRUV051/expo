@@ -205,6 +205,13 @@
   flex-direction: row;
 }
 
+.form-sub-field-select {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  
+}
+
 .spinner {
   position: absolute;
   top: 50%;
@@ -316,6 +323,11 @@ sign-out{
 
 
   .form-sub-field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-sub-field-select {
     display: flex;
     flex-direction: column;
   }

@@ -1,11 +1,16 @@
-import Header from '@components/header'
-import React from 'react'
+import dynamic from 'next/dynamic'
+
+
+const NoSSR = dynamic(() => import('@components/header'), { ssr: false })
 
 const AdminLayout = ({ children }) => {
+
+  
+
   return (
     <>
-      <Header suppressHydrationWarning />
-      {children}
+      <NoSSR />
+      <main suppressHydrationWarning >{children}</main>
     </>
   )
 }

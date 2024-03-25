@@ -17,7 +17,8 @@ const StudentCreateform = () => {
   const [selectedExams, setSelectedExams] = useState([])
   const [countries, setCountries] = useState([])
   const [exams, setExams] = useState([])
-
+  const [services, setServices] = useState([])
+  const [selectedServices, setSelectedServices] = useState([])
   const [selectedCountries, setSelectedCountries] = useState({})
 
   const handleCheckboxChange = (countryId, isChecked) => {
@@ -32,13 +33,17 @@ const StudentCreateform = () => {
       const countryResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/country`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-      console.log('countryResponse', countryResponse)
       setCountries(countryResponse.data.data)
 
       const examResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/exam`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setExams(examResponse.data.data)
+
+      const serviceResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/service`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+      setServices(serviceResponse.data.data)
     } catch (error) {
       console.error('Error fetching data:', error)
     }
@@ -56,6 +61,12 @@ const StudentCreateform = () => {
 
   const handleExamAttendanceChange = e => {
     setIsExamAttended(e.target.checked)
+  }
+
+  const handleServiceCheckboxChange = (serviceId, isChecked) => {
+    setSelectedServices(prevSelectedServices =>
+      isChecked ? [...prevSelectedServices, serviceId] : prevSelectedServices.filter(id => id !== serviceId)
+    )
   }
 
   const onSubmit = async data => {
@@ -78,6 +89,8 @@ const StudentCreateform = () => {
         delete formData[scoreFieldName]
       })
 
+      formData.services = selectedServices.map(serviceId => serviceId)
+
       console.log(formData)
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, formData, {
@@ -87,7 +100,6 @@ const StudentCreateform = () => {
       if (response.data.statusCode === 201) {
         window.location.reload()
       }
-      console.log('Response:', response)
     } catch (error) {
       console.error('Error:', error)
     }
@@ -147,6 +159,21 @@ const StudentCreateform = () => {
         register={register}
         error={errors.role}
         errorMessage='Role is required'
+      />
+
+      <SelectInput
+        label='Qualification'
+        id='qualification'
+        required
+        options={[
+          { value: '10th', label: '10th' },
+          { value: '12th', label: '12th' },
+          { value: 'bachelor', label: 'Bachelor' },
+          { value: 'master', label: 'Master' }
+        ]}
+        register={register}
+        error={errors.qualification}
+        errorMessage='Qualification is required'
       />
 
       <div className='form-field'>
@@ -216,19 +243,26 @@ const StudentCreateform = () => {
         </div>
       )}
 
-      {/* <SelectInput
-        label='Other Services'
-        id='otherservices'
-        options={[
-          { value: 'CANADA - PR', label: 'CANADA - PR' },
-          { value: 'USA H1 -B', label: 'USA H1 -B' },
-          { value: 'FREE GERMAN EDUCATION', label: 'FREE GERMAN EDUCATION' },
-          { value: 'OTHER', label: 'OTHER' }
-        ]}
-        register={register}
-        error={errors.role}
-        errorMessage='Role is required'
-      /> */}
+      <div className='form-field'>
+        <label className='form-label'>Other Services</label>
+        <div className='form-sub-field-select'>
+          {services.map(service => (
+            <div key={service.u_id} className='flex items-center mt-2'>
+              <input
+                type='checkbox'
+                id={service.name}
+                checked={selectedServices.includes(service.u_id)}
+                onChange={e => handleServiceCheckboxChange(service.u_id, e.target.checked)}
+                className='checkbox-icon'
+
+              />
+              <label htmlFor={service.name} className='checkbox-label'>
+                {service.name}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <Button className='w-full' type='submit'>
         Add User
