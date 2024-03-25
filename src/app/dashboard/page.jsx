@@ -17,7 +17,6 @@ import {
 import UpdateForm from '@components/forms/update-form'
 import AddForm from '@components/forms/add-form'
 import ViewForm from '@components/view-form'
-import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 
 const Page = () => {
