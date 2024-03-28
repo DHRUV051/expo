@@ -12,14 +12,9 @@ import {
   IconButton,
   List,
   ListItem,
-  Menu,
-  MenuHandler,
-  MenuItem,
-  MenuList,
   Typography
 } from '@material-tailwind/react'
 import { useEffect, useState } from 'react'
-import { FaUser } from 'react-icons/fa'
 
 const Header = () => {
   const [open, setOpen] = useState(false)
@@ -81,10 +76,11 @@ const Header = () => {
           </div>
         )}
 
+
         {isLocalStorageAvailable && (
           <div className='mobileNavbar '>
             <div className='flex space-x-4 items-center'>
-              <h1 className='text-black text-[16px] font-bold'>Welcome {profile.name}</h1>
+              <h1 className='text-black text-[16px] font-bold'>Hello {profile.name}!</h1>
 
               <div className='mt-2'>
                 <button onClick={openDrawer}>
@@ -142,21 +138,9 @@ const Header = () => {
         {isLocalStorageAvailable && (
           <div className='desktopNavbar'>
             <div className='flex space-x-8 items-center flex-row'>
-              <h1 className='text-black text-[24px] font-bold'>Welcome {profile.name}</h1>
+              <h1 className='text-black text-[24px] font-bold'>Hello {profile.name}!</h1>
               <div className=''>
-                <Menu className=''>
-                  <MenuHandler>
-                    <button variant='outlined p-0 flex flex-col items-center  justify-center' className=''>
-                      <FaUser className='mt-2 flex' />
-                    </button>
-                  </MenuHandler>
-                  <MenuList className='w-[100px]'>
-                   
-                    <MenuItem className='bg-none hover:bg-none'>
-                      <Button onClick={() => handleLogout()}>Log Out</Button>
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
+              <Button onClick={() => handleLogout()}>Log Out</Button>
               </div>
             </div>
           </div>

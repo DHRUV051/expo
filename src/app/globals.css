@@ -200,10 +200,7 @@
   align-items: center;
 }
 
-.form-sub-field {
-  display: flex;
-  flex-direction: row;
-}
+
 
 .form-sub-field-select {
   display: grid;

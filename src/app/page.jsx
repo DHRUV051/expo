@@ -21,7 +21,7 @@ const Page = () => {
             routerRef.current.push('/dashboard')
             break
           case 'Representative':
-          case 'Front-Desk':
+          case 'Front Desk':
             routerRef.current.push('/dashboard/student')
             break
           default:

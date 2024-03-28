@@ -99,7 +99,7 @@ const UpdateForm = ({ rowData }) => {
         {errors.role && <span className='error-message'>Role is required</span>}
       </div>
 
-      <Button type='submit'>Update</Button>
+      <Button type='submit'>Save</Button>
     </form>
   )
 }

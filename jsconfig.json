@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@images/*": ["public/images/*"],
+      "@images/*": ["public/*"],
       "@styles-page/*": ["src/styles-page/*"],
       "@pages/*": ["src/app/*"],
       "@strings": ["src/constants/strings"],

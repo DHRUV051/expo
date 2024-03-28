@@ -394,7 +394,7 @@ const EditStudentCreateForm = ({ rowData }) => {
           {...register('visited_expo')}
           className='checkbox-icon extra'
         />
-        <label className='form-label checkbox-label-student mt-4 ml-2'>Is Attended Expo?</label>
+        <label className='form-label checkbox-label-student mt-4 ml-2'>Is Student Visited Expo ?</label>
       </div>
 
       <Button className='w-full' type='submit'>

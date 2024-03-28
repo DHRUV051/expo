@@ -185,20 +185,21 @@ const SearchForm = () => {
                       }}
                     />
                     <label htmlFor='visited_expo' className='ml-2 font-bold'>
-                      Visited Expo
+                     Is Student Visited Expo ?
                     </label>
-                    {show && (
-                      <Button
-                        type='button'
-                        onClick={onSave}
-                        className=' text-white font-bold py-2 px-4 rounded'
-                        disabled={data.visited_expo}
-                      >
-                        {loadingSave ? 'Saving...' : 'Save'}
-                      </Button>
-                    )}
                   </div>
                 </fieldset>
+                {show && (
+                  <Button
+                    type='button'
+                    size='lg'
+                    onClick={onSave}
+                    className=' text-white font-bold mt-2 py-2 w-full px-4 rounded'
+                    disabled={data.visited_expo}
+                  >
+                    {loadingSave ? 'Saving...' : 'Save'}
+                  </Button>
+                )}
               </div>
             </div>
           </div>

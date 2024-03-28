@@ -105,13 +105,14 @@ const StudentCreateform = () => {
       })
       delete formData.other_country
       formData.service = selectedServices.map(serviceId => serviceId)
+      console.log('formData', formData);
 
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      if (response.data.statusCode === 201) {
-        window.location.reload()
-      }
+      // const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, formData, {
+      //   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      // })
+      // if (response.data.statusCode === 201) {
+      //   window.location.reload()
+      // }
     } catch (error) {
       toast('Error Creating Student')
       console.log('Error:', error)
@@ -267,7 +268,7 @@ const StudentCreateform = () => {
           </div>
 
           {exams.map(exam => (
-            <div key={exam.u_id} className='form-sub-field'>
+            <div key={exam.u_id} className='form-sub-field mt-1 w-full'>
               {selectedExams.includes(exam.name) && (
                 <TextInput
                   id={`${exam.name}Score`}
@@ -275,6 +276,7 @@ const StudentCreateform = () => {
                   placeholder='Enter Overall Score'
                   register={register}
                   required
+                  className="w-full"
                   error={errors[`${exam.name}Score`]}
                   pattern={{
                     value: /^-?\d*\.?\d*$/,

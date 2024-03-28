@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { MdError } from 'react-icons/md'
 
-const TextInput = ({ label, type, id, placeholder, value, register, required, error, errorMessage, pattern }) => {
+const TextInput = ({ label, type, id, placeholder, value, register, required, error, errorMessage, pattern, className }) => {
   const [showPassword, setShowPassword] = useState(false)
 
   const togglePasswordVisibility = () => {
@@ -26,7 +26,7 @@ const TextInput = ({ label, type, id, placeholder, value, register, required, er
             message: pattern.message
           }
         })}
-        className={`form-input ${error ? 'input-error' : ''}`}
+        className={`${className} form-input ${error ? 'input-error' : ''}`}
       />
       {type === 'password' && (
         <button type='button' onClick={togglePasswordVisibility} className='password-toggle'>

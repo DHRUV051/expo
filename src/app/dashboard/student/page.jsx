@@ -21,6 +21,8 @@ import Loading from '@components/globals/loading-page'
 import { useRouter } from 'next/navigation'
 import { ToastContainer, toast } from 'react-toastify'
 import { useForm } from 'react-hook-form'
+import Image from 'next/image'
+import xslx from '../../../../public/xslx.png'
 
 const Page = () => {
   const [loading, setLoading] = useState(true)
@@ -60,8 +62,6 @@ const Page = () => {
       }
     }
   }, [currentPage, perPage])
-
-
 
   const fetchUsers = async (currentPage, perPage) => {
     try {
@@ -185,11 +185,12 @@ const Page = () => {
       name: 'Email',
       selector: row => row.email
     },
-    {
-      name: 'Countries',
-      selector: row => row.student_countries.map(country => country.country.name).join(', '),
-      sortable: true
-    },
+
+    // {
+    //   name: 'Countries',
+    //   selector: row => row.student_countries.map(country => country.country.name).join(', '),
+    //   sortable: true
+    // },
     {
       name: 'Action',
       cell: row => {
@@ -421,49 +422,53 @@ const Page = () => {
                 </IconButton>
               </DialogHeader>
               <DialogBody>
-                {!selectedFile && (
-                  <div className='flex items-center justify-center w-full'>
-                    <label
-                      htmlFor='uploadFile'
-                      className='flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'
-                    >
-                      <div className='flex flex-col items-center justify-center pt-5 pb-6'>
-                        <svg
-                          className='w-8 h-8 mb-4 text-gray-500 dark:text-gray-400'
-                          aria-hidden='true'
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 20 16'
-                        >
-                          <path
-                            stroke='currentColor'
-                            stroke-linecap='round'
-                            stroke-linejoin='round'
-                            stroke-width='2'
-                            d='M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2'
-                          />
-                        </svg>
-                        <p className='mb-2 text-sm text-gray-500 dark:text-gray-400'>
-                          <span className='font-semibold'>Click to upload</span> or drag and drop
-                        </p>
-                        <p className='text-xs text-gray-500 dark:text-gray-400'>Supports .xlsx</p>
-                      </div>
-                      <input
-                        id='uploadFile'
-                        type='file'
-                        onChangeCapture={e => handleFileChange(e)}
-                        accept='.xlsx'
-                        className='hidden'
-                        {...register('files')}
-                      />
-                    </label>
-                  </div>
-                )}
-                {selectedFile && (
+                <div className='flex items-center justify-center w-full'>
+                  <label
+                    htmlFor='uploadFile'
+                    className='flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'
+                  >
+                    <div className='flex flex-col items-center justify-center pt-5 pb-6'>
+                      <svg
+                        className='w-8 h-8 mb-4 text-gray-500 dark:text-gray-400'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 20 16'
+                      >
+                        <path
+                          stroke='currentColor'
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                          stroke-width='2'
+                          d='M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2'
+                        />
+                      </svg>
+                      <p className='mb-2 text-sm text-gray-500 dark:text-gray-400'>
+                        <span className='font-semibold'>Click to upload</span>
+                      </p>
+                      <p className='text-md text-gray-500 dark:text-gray-400'>Supports .xlsx</p>
+                    </div>
+                    <input
+                      id='uploadFile'
+                      type='file'
+                      onChangeCapture={e => handleFileChange(e)}
+                      accept='.xlsx'
+                      className='hidden'
+                      {...register('files')}
+                    />
+                  </label>
+                </div>
+
+                {selectedFile  && (
+                  
+
+                  <div className='flex items-center mt-2 p-1 border space-x-2'>
+                    <Image src={xslx} alt="xlsx" width={40} height={40} />
                   <div classname='flex flex-row justify-between'>
-                    <h1 className='text-black'>Filename: {selectedFile.name}</h1>
-                    <h1 className='text-black'>Filesize: {selectedFile.size / 1000} kb</h1>
+                    <h1 className='text-black'>{selectedFile.name}</h1>
                   </div>
+                  </div>
+
                 )}
               </DialogBody>
               <DialogFooter>

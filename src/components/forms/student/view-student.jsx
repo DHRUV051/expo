@@ -4,17 +4,17 @@ import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 
-
 const StudentView = ({ studentData }) => {
-
   const { register, setValue, watch } = useForm()
   const [loadingSave, setLoadingSave] = useState(false)
-  const [show,setShow] = useState(null);
+  const [show, setShow] = useState(null)
 
   const handleButtonShow = () => {
-    if(studentData.visited_expo === true){
+    if (studentData.visited_expo === true) {
       setShow(false)
-    }else {
+    } else if (watch('visited_expo') === true) {
+      setShow(false)
+    } else {
       setShow(true)
     }
   }
@@ -23,7 +23,7 @@ const StudentView = ({ studentData }) => {
     if (studentData && watch('visited_expo') !== studentData.visited_expo) {
       setValue('visited_expo', studentData.visited_expo)
     }
-  },[studentData ,watch, setValue])
+  }, [studentData, watch, setValue])
 
   const handleCheckboxChange = () => {
     const isVisited = !watch('visited_expo')
@@ -33,7 +33,7 @@ const StudentView = ({ studentData }) => {
   const onSave = async () => {
     setLoadingSave(true)
     try {
-       await axios.patch(
+      await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/student/${data.u_id}`,
         {
           visited_expo: watch('visited_expo')
@@ -44,7 +44,7 @@ const StudentView = ({ studentData }) => {
           }
         }
       )
-     
+
       toast.success('Data saved successfully!')
     } catch (error) {
       console.log('Error updating student data:', error)
@@ -111,38 +111,38 @@ const StudentView = ({ studentData }) => {
             </ul>
           </div>
 
-          
           <div className='flex flex-row items-center space-x-4'>
-                    <input
-                      type='checkbox'
-                      id='visited_expo'
-                      defaultChecked={studentData.visited_expo}
-                      {...register('visited_expo')}
-                      checked={watch('visited_expo')}
-                      className={`checkbox-icon ${studentData.visited_expo && 'disabled'}   `}
-                      onChange={() => {
-                        handleButtonShow()
-                        handleCheckboxChange()
-                      }}
-                    />
-                    <label htmlFor='visited_expo' className='ml-2 font-bold'>
-                      Visited Expo
-                    </label>
-                    {show && (
-                      <Button
-                        type='button'
-                        onClick={onSave}
-                        className=' text-white font-bold py-2 px-4 rounded'
-                        disabled={loadingSave}
-                      >
-                        {loadingSave ? 'Saving...' : 'Save'}
-                      </Button>
-                    )}
-                  </div>
-
-         
+            <input
+              type='checkbox'
+              id='visited_expo'
+              defaultChecked={studentData.visited_expo}
+              {...register('visited_expo')}
+              checked={watch('visited_expo')}
+              className={`checkbox-icon ${studentData.visited_expo && 'disabled'}   `}
+              onChange={() => {
+                handleButtonShow()
+                handleCheckboxChange()
+              }}
+            />
+            <label htmlFor='visited_expo' className='ml-2 font-bold'>
+              Is Student Visited Expo ?
+            </label>
+          </div>
         </fieldset>
       </div>
+
+      {show && (
+        <Button
+          size='lg'
+          type='button'
+          onClick={onSave}
+          className=' text-white font-bold py-2 mt-2 w-full px-4 rounded'
+          disabled={loadingSave}
+        >
+          {loadingSave ? 'Saving...' : 'Save'}
+        </Button>
+      )}
+
       <ToastContainer />
     </div>
   )
