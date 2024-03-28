@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import TextInput from '@components/globals/text-input'
@@ -5,6 +6,8 @@ import TextInput from '@components/globals/text-input'
 import SelectInput from '@components/globals/select-input'
 import axios from 'axios'
 import { Button } from '@material-tailwind/react'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const StudentCreateform = () => {
   const {
@@ -19,14 +22,10 @@ const StudentCreateform = () => {
   const [exams, setExams] = useState([])
   const [services, setServices] = useState([])
   const [selectedServices, setSelectedServices] = useState([])
-  const [selectedCountries, setSelectedCountries] = useState({})
-
-  const handleCheckboxChange = (countryId, isChecked) => {
-    setSelectedCountries(prevSelectedCountries => ({
-      ...prevSelectedCountries,
-      [countryId]: isChecked
-    }))
-  }
+  const [selectedCountries, setSelectedCountries] = useState([])
+  const [isOtherChecked, setIsOtherChecked] = useState(false)
+  // eslint-disable-next-line no-unused-vars
+  const [otherCountry, setOtherCountry] = useState('')
 
   const fetchData = async () => {
     try {
@@ -34,6 +33,7 @@ const StudentCreateform = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       setCountries(countryResponse.data.data)
+      console.log('countries', countryResponse.data.data)
 
       const examResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/exam`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -45,13 +45,28 @@ const StudentCreateform = () => {
       })
       setServices(serviceResponse.data.data)
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.log('Error fetching data:', error)
     }
   }
 
   useEffect(() => {
     fetchData()
   }, [])
+
+  const handleOtherCheckboxChange = () => {
+    setIsOtherChecked(prev => !prev)
+    if (!isOtherChecked) {
+      setOtherCountry('')
+    }
+  }
+
+  const handleCheckboxChange = (countryId, isChecked) => {
+    setSelectedCountries(prevSelectedCountries => ({
+      ...prevSelectedCountries,
+      [countryId]: isChecked
+    }))
+    console.log('selectedCountries', selectedCountries)
+  }
 
   const handleExamCheckboxChange = (examName, isChecked) => {
     setSelectedExams(prevSelectedExams =>
@@ -63,16 +78,16 @@ const StudentCreateform = () => {
     setIsExamAttended(e.target.checked)
   }
 
-  const handleServiceCheckboxChange = (serviceId, isChecked) => {
-    setSelectedServices(prevSelectedServices =>
-      isChecked ? [...prevSelectedServices, serviceId] : prevSelectedServices.filter(id => id !== serviceId)
-    )
-  }
-
   const onSubmit = async data => {
     try {
       let formData = { ...data }
-      formData.country = Object.keys(selectedCountries).filter(countryId => selectedCountries[countryId])
+
+      formData.country = Object.keys(selectedCountries).filter(
+        countryId => selectedCountries[countryId] && countryId !== '0'
+      )
+      if (isOtherChecked) {
+        formData.country.push(data?.other_country)
+      }
 
       formData.exam = selectedExams.map(examName => {
         const foundExam = exams.find(exam => exam.name === examName)
@@ -88,20 +103,18 @@ const StudentCreateform = () => {
         const scoreFieldName = `${examName}Score`
         delete formData[scoreFieldName]
       })
-
-      formData.services = selectedServices.map(serviceId => serviceId)
-
-      console.log(formData)
+      delete formData.other_country
+      formData.service = selectedServices.map(serviceId => serviceId)
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-
       if (response.data.statusCode === 201) {
         window.location.reload()
       }
     } catch (error) {
-      console.error('Error:', error)
+      toast('Error Creating Student')
+      console.log('Error:', error)
     }
   }
 
@@ -143,8 +156,9 @@ const StudentCreateform = () => {
         placeholder='Enter Phone Number'
         register={register}
         required
-        error={errors.phonenumber}
+        error={errors.phone_number} // Pass error object from React Hook Form
         errorMessage='Phone is required'
+        pattern={{ value: /^[0-9]{10}$/, message: 'Phone Number must be 10 digits long and contain only numbers' }}
       />
 
       <SelectInput
@@ -164,7 +178,6 @@ const StudentCreateform = () => {
       <SelectInput
         label='Qualification'
         id='qualification'
-        required
         options={[
           { value: '10th', label: '10th' },
           { value: '12th', label: '12th' },
@@ -178,23 +191,50 @@ const StudentCreateform = () => {
 
       <div className='form-field'>
         <label className='form-label'>Countries are you interested in?</label>
-        <div className='form-sub-field'>
-          {countries.map(country => (
-            <div key={country.u_id} className='flex items-center mt-2'>
-              <input
-                type='checkbox'
-                id={country.name}
-                checked={selectedCountries[country.u_id]}
-                onChange={e => handleCheckboxChange(country.u_id, e.target.checked)}
-                className='checkbox-icon'
-              />
-              <label htmlFor={country.name} className='checkbox-label'>
-                {country.name}
-              </label>
-            </div>
-          ))}
+        <div className='form-sub-field-select'>
+          {countries.map(country => {
+            if (country.u_id === 'COU1000007') {
+              return
+            }
+
+            return (
+              <div key={country.u_id} className='flex items-center mt-2'>
+                <input
+                  type='checkbox'
+                  id={country.name}
+                  checked={selectedCountries[country.u_id]}
+                  onChange={e => handleCheckboxChange(country.u_id, e.target.checked)}
+                  className='checkbox-icon'
+                />
+                <label htmlFor={country.name} className='checkbox-label'>
+                  {country.name}
+                </label>
+              </div>
+            )
+          })}
+          <div className='flex items-center mt-2'>
+            <input
+              type='checkbox'
+              id='OTHER'
+              checked={isOtherChecked}
+              onChange={handleOtherCheckboxChange}
+              className='checkbox-icon'
+            />
+            <label htmlFor='OTHER' className='checkbox-label'>
+              OTHER
+            </label>
+          </div>
         </div>
       </div>
+      {isOtherChecked && (
+        <TextInput
+          id='other_country'
+          type='text'
+          register={register}
+          onChange={e => setOtherCountry(e.target.value)}
+          placeholder='Enter other country'
+        />
+      )}
 
       <div className='form-field flex'>
         <label className='form-label checkbox-label-student mt-4'>Is Exam Any Given?</label>
@@ -202,6 +242,7 @@ const StudentCreateform = () => {
           type='checkbox'
           id='examAttended'
           className='checkbox-icon extra'
+          {...register('is_exam_attended')}
           onChange={handleExamAttendanceChange}
         />
       </div>
@@ -209,7 +250,7 @@ const StudentCreateform = () => {
       {isExamAttended && (
         <div className='form-field'>
           <label className='form-label'>Given Exam</label>
-          <div className='form-sub-field'>
+          <div className='form-sub-field-select'>
             {exams.map(exam => (
               <div key={exam.u_id} className='flex'>
                 <input
@@ -226,7 +267,7 @@ const StudentCreateform = () => {
           </div>
 
           {exams.map(exam => (
-            <div key={exam.u_id} className='form-field mt-4'>
+            <div key={exam.u_id} className='form-sub-field'>
               {selectedExams.includes(exam.name) && (
                 <TextInput
                   id={`${exam.name}Score`}
@@ -235,6 +276,10 @@ const StudentCreateform = () => {
                   register={register}
                   required
                   error={errors[`${exam.name}Score`]}
+                  pattern={{
+                    value: /^-?\d*\.?\d*$/,
+                    message: 'Please enter a valid number'
+                  }}
                   errorMessage={`Overall Score for ${exam.label} is required`}
                 />
               )}
@@ -244,28 +289,30 @@ const StudentCreateform = () => {
       )}
 
       <div className='form-field'>
-        <label className='form-label'>Other Services</label>
-        <div className='form-sub-field-select'>
+        <label htmlFor='services' className='form-label'>
+          Services
+        </label>
+        <select
+          id='service'
+          {...register('service')}
+          onChange={e => setSelectedServices(Array.from(e.target.selectedOptions, option => option.value))}
+          className={`form-input ${errors.services ? 'input-error' : ''}`}
+        >
+          <option value='' disabled selected>
+            Select Services
+          </option>
           {services.map(service => (
-            <div key={service.u_id} className='flex items-center mt-2'>
-              <input
-                type='checkbox'
-                id={service.name}
-                checked={selectedServices.includes(service.u_id)}
-                onChange={e => handleServiceCheckboxChange(service.u_id, e.target.checked)}
-                className='checkbox-icon'
-              />
-              <label htmlFor={service.name} className='checkbox-label'>
-                {service.name}
-              </label>
-            </div>
+            <option key={service.u_id} value={service.u_id}>
+              {service.name}
+            </option>
           ))}
-        </div>
+        </select>
       </div>
 
       <Button className='w-full' type='submit'>
-        Add User
+        Add Student
       </Button>
+      <ToastContainer />
     </form>
   )
 }

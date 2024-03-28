@@ -5,6 +5,8 @@ import TextInput from '../globals/text-input'
 import Button from '../globals/button'
 import axios from 'axios'
 import { useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const LoginForm = () => {
   const {
@@ -21,9 +23,9 @@ const LoginForm = () => {
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login`, data)
       setLoading(false)
-      console.log(response.data.data)
       localStorage.setItem('token', response.data.data.token)
       localStorage.setItem('role', response.data.data.role)
+      localStorage.setItem('id', response.data.data.u_id)
 
       if (localStorage.getItem('role') === 'Admin') {
         router.push('/dashboard')
@@ -33,7 +35,8 @@ const LoginForm = () => {
         router.push('/dashboard/student')
       }
     } catch (error) {
-      console.error(error)
+      console.log(error)
+      toast.error('Invalid Credentials')
     }
   }
 
@@ -63,6 +66,7 @@ const LoginForm = () => {
       <Button disable={loading} type={'submit'}>
         Login
       </Button>
+      <ToastContainer />
     </form>
   )
 }

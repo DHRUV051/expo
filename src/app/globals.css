@@ -212,6 +212,10 @@
   
 }
 
+.disabled {
+  pointer-events: none;
+}
+
 .spinner {
   position: absolute;
   top: 50%;

@@ -16,7 +16,7 @@ const SelectInput = ({ label, id, options, register, required, error, errorMessa
       </label>
       <select
         id={id}
-        className={`form-input ${error ? 'input-error custom-select' : ''}`}
+        className={`form-input  ${error ? 'input-error custom-select' : ''}`}
         {...register(id, { required: required && errorMessage })}
         onChange={handleSelectChange}
       >

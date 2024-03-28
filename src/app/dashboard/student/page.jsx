@@ -19,6 +19,8 @@ import EditStudentCreateForm from '@components/forms/student/update-student-form
 import SearchForm from '@components/forms/search'
 import Loading from '@components/globals/loading-page'
 import { useRouter } from 'next/navigation'
+import { ToastContainer, toast } from 'react-toastify'
+import { useForm } from 'react-hook-form'
 
 const Page = () => {
   const [loading, setLoading] = useState(true)
@@ -34,6 +36,9 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedRow, setSelectedRow] = useState(null)
   const [view, setView] = useState(false)
+  const [openUpload, setOpenUpload] = useState(false)
+  const { handleSubmit, register } = useForm()
+  const [selectedFile, setSelectedFile] = useState(null)
 
   const router = useRouter()
 
@@ -56,6 +61,8 @@ const Page = () => {
     }
   }, [currentPage, perPage])
 
+
+
   const fetchUsers = async (currentPage, perPage) => {
     try {
       const response = await axios.get(
@@ -67,8 +74,33 @@ const Page = () => {
       setFilteredData(response.data.data.studentData)
       setLoading(false)
     } catch (error) {
-      console.error('Error fetching users:', error)
+      console.log('Error fetching users:', error)
       setLoading(false)
+    }
+  }
+
+  const handleFileChange = event => {
+    const file = event.target.files[0]
+    setSelectedFile(file)
+  }
+
+  const onSubmit = async () => {
+    try {
+      const fileData = new FormData()
+      fileData.set('files', selectedFile)
+      setSelectedFile(null)
+
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student-excel-upload`, fileData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      setOpenUpload(!openUpload)
+      toast.success('File uploaded successfully!')
+    } catch (error) {
+      console.log('Error uploading file:', error)
+      toast.error('Error uploading file!')
     }
   }
 
@@ -119,6 +151,11 @@ const Page = () => {
     setCurrentPage(page)
   }
 
+  const handleOpenUpload = () => {
+    setOpenUpload(!openUpload)
+    setSelectedFile(null)
+  }
+
   const handleDelete = async rowData => {
     try {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/student/${rowData.u_id}`, {
@@ -129,7 +166,7 @@ const Page = () => {
         window.location.reload()
       }
     } catch (error) {
-      console.error('Error deleting user data:', error)
+      console.log('Error deleting user data:', error)
     }
   }
 
@@ -166,10 +203,11 @@ const Page = () => {
               <button onClick={() => handleOpenEdit(row)}>
                 <MdEdit size={20} />
               </button>
-
-              <button onClick={() => handleOpenDelete(row)}>
-                <MdDelete size={20} className='text-red-500' />
-              </button>
+              {localStorage.getItem('role') === 'Admin' && (
+                <button onClick={() => handleOpenDelete(row)}>
+                  <MdDelete size={20} className='text-red-500' />
+                </button>
+              )}
             </div>
           </>
         )
@@ -219,8 +257,6 @@ const Page = () => {
                   fixedHeader
                   fixedHeaderScrollHeight='600px'
                   className='scrollbar'
-                  selectableRows
-                  selectableRowsHighlight
                   paginationTotalRows={totalRows}
                   paginationRowsPerPageOptions={[10, 25, 50, 100]}
                   pagination
@@ -238,7 +274,14 @@ const Page = () => {
                       className='lg:w-[250px] sm:w-full md:w-[250px] form-input'
                     />
                   }
-                  actions={<Button onClick={() => setOpenAdd(!openAdd)}>Add</Button>}
+                  actions={
+                    <>
+                      {localStorage.getItem('role') === 'Admin' && (
+                        <Button onClick={() => handleOpenUpload()}>Upload</Button>
+                      )}
+                      <Button onClick={() => setOpenAdd(!openAdd)}>Add</Button>
+                    </>
+                  }
                   customStyles={tableCustomStyles}
                   suppressHydrationWarning
                 />
@@ -247,6 +290,7 @@ const Page = () => {
           )}
 
           {/* Edit Student Modal */}
+
           <Dialog open={openEdit} handler={handleOpenEdit}>
             <DialogHeader className='justify-between'>
               <Typography variant='h5' color='blue-gray'>
@@ -356,6 +400,80 @@ const Page = () => {
               <StudentCreateform />
             </DialogBody>
           </Dialog>
+
+          <Dialog open={openUpload} handler={handleOpenUpload} suppressHydrationWarning>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <DialogHeader className='justify-between'>
+                <Typography variant='h5' color='blue-gray'>
+                  Upload Student Data
+                </Typography>
+                <IconButton variant='text' color='blue-gray' onClick={handleOpenUpload}>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={2}
+                    stroke='currentColor'
+                    className='h-5 w-5'
+                  >
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                  </svg>
+                </IconButton>
+              </DialogHeader>
+              <DialogBody>
+                {!selectedFile && (
+                  <div className='flex items-center justify-center w-full'>
+                    <label
+                      htmlFor='uploadFile'
+                      className='flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'
+                    >
+                      <div className='flex flex-col items-center justify-center pt-5 pb-6'>
+                        <svg
+                          className='w-8 h-8 mb-4 text-gray-500 dark:text-gray-400'
+                          aria-hidden='true'
+                          xmlns='http://www.w3.org/2000/svg'
+                          fill='none'
+                          viewBox='0 0 20 16'
+                        >
+                          <path
+                            stroke='currentColor'
+                            stroke-linecap='round'
+                            stroke-linejoin='round'
+                            stroke-width='2'
+                            d='M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2'
+                          />
+                        </svg>
+                        <p className='mb-2 text-sm text-gray-500 dark:text-gray-400'>
+                          <span className='font-semibold'>Click to upload</span> or drag and drop
+                        </p>
+                        <p className='text-xs text-gray-500 dark:text-gray-400'>Supports .xlsx</p>
+                      </div>
+                      <input
+                        id='uploadFile'
+                        type='file'
+                        onChangeCapture={e => handleFileChange(e)}
+                        accept='.xlsx'
+                        className='hidden'
+                        {...register('files')}
+                      />
+                    </label>
+                  </div>
+                )}
+                {selectedFile && (
+                  <div classname='flex flex-row justify-between'>
+                    <h1 className='text-black'>Filename: {selectedFile.name}</h1>
+                    <h1 className='text-black'>Filesize: {selectedFile.size / 1000} kb</h1>
+                  </div>
+                )}
+              </DialogBody>
+              <DialogFooter>
+                <Button className='w-full' type='submit'>
+                  Upload
+                </Button>
+              </DialogFooter>
+            </form>
+          </Dialog>
+          <ToastContainer />
         </>
       ) : (
         <>

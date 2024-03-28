@@ -36,7 +36,7 @@ const TextInput = ({ label, type, id, placeholder, value, register, required, er
       {error && (
         <span className='error-message'>
           <MdError className='error-icon' size={24} />
-          {errorMessage}
+          {(error && error.message) || (!error && pattern && pattern.message) || errorMessage}
         </span>
       )}
     </div>

@@ -1,14 +1,19 @@
+'use client'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@material-tailwind/react'
 import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import TextInput from '@components/globals/text-input'
 
 const EditStudentCreateForm = ({ rowData }) => {
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors },
+    trigger
   } = useForm()
 
   const [isExamAttended, setIsExamAttended] = useState(false)
@@ -18,63 +23,35 @@ const EditStudentCreateForm = ({ rowData }) => {
   const [selectedCountries, setSelectedCountries] = useState({})
   const [services, setServices] = useState([])
   const [selectedServices, setSelectedServices] = useState([])
-  console.log('rowData', rowData)
+  const [isOtherChecked, setIsOtherChecked] = useState(false)
+  // eslint-disable-next-line no-unused-vars
+  const [otherCountry, setOtherCountry] = useState('')
+
   useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/student/${rowData.u_id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        })
+    if (rowData) {
+      setValue('name', rowData.name || '')
+      setValue('email', rowData.email || '')
+      setValue('address', rowData.address || '')
+      setValue('phone_number', rowData.phone_number || '')
+      setValue('branch', rowData.branch || '')
+      setValue('qualification', rowData.qualification || '')
+      setValue('is_exam_attended', rowData.is_exam_attended || false)
+      setValue('visited_expo', rowData.visited_expo || false)
+      const selectedCountriesData = {}
+      rowData.student_countries.forEach(country => {
+        selectedCountriesData[country.country_u_id] = true
+      })
+      setSelectedCountries(selectedCountriesData)
 
-        const studentData = response.data.data
+      const selectedExamsData = rowData.student_exams.map(exam => exam.exam.name)
+      setSelectedExams(selectedExamsData)
 
-        // Populate form fields with student data
-        setValue('name', studentData.name)
-        setValue('email', studentData.email)
-        setValue('address', studentData.address)
-        setValue('phone_number', studentData.phone_number)
-        setValue('branch', studentData.branch)
-        setValue('is_exam_attended', studentData.is_exam_attended)
-        setValue(
-          'exam',
-          studentData.student_exams.map(exam => exam.exam.name)
-        )
-        setValue('qualification', studentData.qualification)
+      const defaultSelectedServices = rowData.student_services.map(service => service.service.u_id)
+      setSelectedServices(defaultSelectedServices || [])
 
-        studentData.student_exams.forEach(exam => {
-          const scoreFieldName = `${exam.name}Score`
-          setValue(scoreFieldName, exam.result)
-        })
-
-        // Set selected countries
-        const selectedCountriesData = {}
-        studentData.student_countries.forEach(country => {
-          selectedCountriesData[country.country_u_id] = true
-        })
-
-        setSelectedCountries(selectedCountriesData)
-
-        const selectedExamsData = studentData.student_exams.map(exam => exam.exam.name)
-        setSelectedExams(selectedExamsData)
-
-        // Set exam attended state
-        setIsExamAttended(studentData.is_exam_attended)
-
-        const selectedServicesData = {}
-        studentData.service.forEach(service => {
-          selectedServicesData[service.u_id] = true
-        })
-        studentData.service.map(service => service.u_id)
-        setSelectedServices(selectedServicesData)
-      } catch (error) {
-        console.error('Error fetching student data:', error)
-      }
+      setIsExamAttended(rowData.is_exam_attended || false)
     }
-
-    fetchStudentData()
-  }, [rowData.u_id, setValue])
+  }, [rowData, setValue])
 
   const handleCheckboxChange = (countryId, isChecked) => {
     setSelectedCountries(prevSelectedCountries => ({
@@ -108,12 +85,19 @@ const EditStudentCreateForm = ({ rowData }) => {
         })
         setServices(serviceResponse.data.data)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.log('Error fetching data:', error)
       }
     }
 
     fetchData()
   }, [])
+
+  const handleOtherCheckboxChange = () => {
+    setIsOtherChecked(prev => !prev)
+    if (!isOtherChecked) {
+      setOtherCountry('')
+    }
+  }
 
   const handleExamAttendanceChange = e => {
     setIsExamAttended(e.target.checked)
@@ -125,24 +109,22 @@ const EditStudentCreateForm = ({ rowData }) => {
     )
   }
 
-  const handleServiceCheckboxChange = (serviceId, isChecked) => {
-    setSelectedServices(prevSelectedServices => ({
-      ...prevSelectedServices,
-      [serviceId]: isChecked
-    }))
-  }
-
   const onSubmit = async data => {
     try {
       data.country = Object.keys(selectedCountries).filter(countryId => selectedCountries[countryId])
 
+      if (isOtherChecked) {
+        data.country.push(data?.other_country)
+      }
+
       data.exam = selectedExams.map(examName => {
         const foundExam = exams.find(exam => exam.name === examName)
         const scoreFieldName = `${examName}Score`
+        const result = data[scoreFieldName]
 
         return {
           u_id: foundExam ? foundExam.u_id : null,
-          result: data[scoreFieldName]
+          result: result || null
         }
       })
 
@@ -150,14 +132,21 @@ const EditStudentCreateForm = ({ rowData }) => {
         const scoreFieldName = `${examName}Score`
         delete data[scoreFieldName]
       })
+      delete data.undefinedScore
+      delete data.other_country
 
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/student`, data, {
+      data.service = selectedServices.map(serviceId => serviceId)
+      console.log('data', data)
+
+      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/student/${rowData.u_id}`, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-
-      console.log('Response:', response)
+      console.log('response', response)
+      window.location.reload()
+      toast.success('Data saved successfully!')
     } catch (error) {
-      console.error('Error:', error)
+      toast.error('Error updating student data')
+      console.log('Error:', error)
     }
   }
 
@@ -215,11 +204,21 @@ const EditStudentCreateForm = ({ rowData }) => {
           type='tel'
           id='phone_number'
           defaultValue={rowData.phone_number}
-          {...register('phone_number', { required: true })}
+          {...register('phone_number', {
+            required: 'Phone Number is required',
+            pattern: {
+              value: /^[0-9]{10}$/,
+              message: 'Phone Number must be 10 digits long and contain only numbers'
+            },
+            validate: value => {
+              return !isNaN(value) && value.length === 10
+            }
+          })}
+          onChange={() => trigger('phone_number')}
           className={`form-input ${errors.phone_number ? 'input-error' : ''}`}
           placeholder='Enter Phone Number'
         />
-        {errors.phone_number && <span className='error-message'>Phone Number is required</span>}
+        {errors.phone_number && <span className='error-message'>{errors.phone_number.message}</span>}
       </div>
       {/* Branch Field */}
       <div className='form-field'>
@@ -228,7 +227,7 @@ const EditStudentCreateForm = ({ rowData }) => {
         </label>
         <select
           id='branch'
-          defaultValue={rowData.branch}
+          selected={rowData.branch}
           {...register('branch')}
           className={`form-input ${errors.branch ? 'input-error' : ''}`}
         >
@@ -246,7 +245,7 @@ const EditStudentCreateForm = ({ rowData }) => {
         </label>
         <select
           id='qualification'
-          defaultValue={rowData.qualification}
+          selected={rowData.qualification}
           {...register('qualification')}
           className={`form-input ${errors.branch ? 'input-error' : ''}`}
         >
@@ -260,30 +259,58 @@ const EditStudentCreateForm = ({ rowData }) => {
 
       <div className='form-field'>
         <label className='form-label'>Countries are you interested in?</label>
-        <div className='form-sub-field'>
-          {countries.map(country => (
-            <div key={country.u_id} className='flex items-center mt-2'>
-              <input
-                type='checkbox'
-                id={country.name}
-                checked={selectedCountries[country.u_id]}
-                onChange={e => handleCheckboxChange(country.u_id, e.target.checked)}
-                className='checkbox-icon'
-              />
-              <label htmlFor={country.name} className='checkbox-label'>
-                {country.name}
-              </label>
-            </div>
-          ))}
+        <div className='form-sub-field-select'>
+          {countries.map(country => {
+            if (country.u_id === 'COU1000007') {
+              return
+            }
+
+            return (
+              <div key={country.u_id} className='flex items-center'>
+                <input
+                  type='checkbox'
+                  id={country.name}
+                  checked={selectedCountries[country.u_id]}
+                  onChange={e => handleCheckboxChange(country.u_id, e.target.checked)}
+                  className='checkbox-icon'
+                />
+                <label htmlFor={country.name} className='checkbox-label'>
+                  {country.name}
+                </label>
+              </div>
+            )
+          })}
+          <div className='flex items-center mt-2'>
+            <input
+              type='checkbox'
+              id='OTHER'
+              checked={isOtherChecked}
+              onChange={handleOtherCheckboxChange}
+              className='checkbox-icon'
+            />
+            <label htmlFor='OTHER' className='checkbox-label'>
+              OTHER
+            </label>
+          </div>
         </div>
       </div>
+      {isOtherChecked && (
+        <TextInput
+          id='other_country'
+          type='text'
+          register={register}
+          onChange={e => setOtherCountry(e.target.value)}
+          placeholder='Enter other country'
+        />
+      )}
 
       <div className='form-field flex'>
         <label className='form-label checkbox-label-student mt-4'>Is Exam Given?</label>
         <input
           type='checkbox'
           id='examAttended'
-          checked={isExamAttended}
+          defaultChecked={rowData.is_exam_attended}
+          {...register('is_exam_attended')}
           className='checkbox-icon extra'
           onChange={handleExamAttendanceChange}
         />
@@ -292,7 +319,7 @@ const EditStudentCreateForm = ({ rowData }) => {
       {isExamAttended && (
         <div className='form-field'>
           <label className='form-label'>Given Exams</label>
-          <div className='form-sub-field'>
+          <div className='form-sub-field-select'>
             {exams.map(exam => (
               <div key={exam.u_id} className='flex'>
                 <input
@@ -312,18 +339,25 @@ const EditStudentCreateForm = ({ rowData }) => {
           {exams.map(exam => (
             <div key={exam.u_id} className='form-field mt-4'>
               {selectedExams.includes(exam.name) && (
-                <>
-                  <label className='form-label'>Overall {exam.name} Score</label>
+                <div className='flex flex-col mt-[10px]'>
+                  <label htmlFor={`${exam.name}Score`} className='mr-2'>{`Overall Score for ${exam.name}`}</label>
                   <input
                     type='text'
                     id={`${exam.name}Score`}
-                    {...register(`${exam.name}Score`, { required: true })}
+                    {...register(`${exam.name}Score`, {
+                      required: `Overall Score for ${exam.name} is required`,
+                      pattern: {
+                        value: /^\d+(\.\d{1,2})?$/,
+                        message: `Please enter a valid score for ${exam.name}`
+                      }
+                    })}
                     defaultValue={rowData.student_exams.find(e => e.exam.name === exam.name)?.result || ''}
-                    className={`form-input ${errors[`${exam.name}Score`] ? 'input-error' : ''}`}
-                    placeholder={`Enter Overall Score for ${exam.name}`}
+                    className={`w-full form-input ${errors[`${exam.name}Score`] ? 'input-error' : ''}`}
                   />
-                  {errors[`${exam.name}Score`] && <span className='error-message'>Score is required</span>}
-                </>
+                  {errors[`${exam.name}Score`] && (
+                    <span className='error-message'>{errors[`${exam.name}Score`].message}</span>
+                  )}
+                </div>
               )}
             </div>
           ))}
@@ -331,28 +365,42 @@ const EditStudentCreateForm = ({ rowData }) => {
       )}
 
       <div className='form-field'>
-        <label className='form-label'>Services</label>
-        <div className='form-sub-field-select'>
+        <label htmlFor='services' className='form-label'>
+          Services
+        </label>
+        <select
+          id='student_services'
+          value={selectedServices}
+          {...register('service')}
+          onChange={e => setSelectedServices(Array.from(e.target.selectedOptions, option => option.value))}
+          className={`form-input ${errors.services ? 'input-error' : ''}`}
+        >
+          <option value='' disabled>
+            Select Services
+          </option>
           {services.map(service => (
-            <div key={service.u_id} className='flex items-center mt-2'>
-              <input
-                type='checkbox'
-                id={service.name}
-                checked={selectedServices[service.u_id]} // Check if service ID is in selectedServices array
-                onChange={e => handleServiceCheckboxChange(service.u_id, e.target.checked)}
-                className='checkbox-icon'
-              />
-              <label htmlFor={service.name} className='checkbox-label'>
-                {service.name}
-              </label>
-            </div>
+            <option key={service.u_id} value={service.u_id}>
+              {service.name}
+            </option>
           ))}
-        </div>
+        </select>
+      </div>
+
+      <div className='form-field flex'>
+        <input
+          type='checkbox'
+          id='attendedExpo'
+          defaultChecked={rowData.visited_expo}
+          {...register('visited_expo')}
+          className='checkbox-icon extra'
+        />
+        <label className='form-label checkbox-label-student mt-4 ml-2'>Is Attended Expo?</label>
       </div>
 
       <Button className='w-full' type='submit'>
         Edit Student
       </Button>
+      <ToastContainer />
     </form>
   )
 }

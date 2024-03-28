@@ -9,7 +9,7 @@ const ViewForm = ({ rowData }) => {
     <div className='info'>
       <div>
         <fieldset className='field'>
-          <legend className='leagend-name'>Personal Information</legend>
+          <legend className='text-center text-[24px] mb-[20px]'>Personal Information</legend>
           <p className='info-item'>
             <span className='field-name'>Name:</span>
             <span className='field-value'>{name}</span>

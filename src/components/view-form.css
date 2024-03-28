@@ -17,3 +17,22 @@
     margin-bottom: 10px;
   }
   
+
+  .field{
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 12px; 
+  }
+
+  .legand-name{
+    font-weight: 700;
+  }
+  
+
+  .field-name{
+    font-weight: 700;
+  }
+
+  .field-value{
+    font-weight: 600;
+  }

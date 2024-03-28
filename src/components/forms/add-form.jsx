@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import TextInput from '../globals/text-input'
 import Button from '../globals/button'
 import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const AddForm = () => {
   const {
@@ -16,12 +18,13 @@ const AddForm = () => {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin`, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-      console.log(response)
+
       if (response.data.statusCode === 201) {
         window.location.reload()
       }
     } catch (error) {
-      console.error(error)
+      console.log(error)
+      toast.error('Error Creating User')
     }
   }
 
@@ -73,7 +76,8 @@ const AddForm = () => {
         </select>
       </div>
 
-      <Button type={'submit'}>Login</Button>
+      <Button type={'submit'}>Add</Button>
+      <ToastContainer />
     </form>
   )
 }

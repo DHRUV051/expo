@@ -1,8 +1,58 @@
-import React from 'react'
+import { Button } from '@material-tailwind/react'
 import './student-view.css'
+import { useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
+
 
 const StudentView = ({ studentData }) => {
-  console.log('studentData', studentData)
+
+  const { register, setValue, watch } = useForm()
+  const [loadingSave, setLoadingSave] = useState(false)
+  const [show,setShow] = useState(null);
+
+  const handleButtonShow = () => {
+    if(studentData.visited_expo === true){
+      setShow(false)
+    }else {
+      setShow(true)
+    }
+  }
+
+  useEffect(() => {
+    if (studentData && watch('visited_expo') !== studentData.visited_expo) {
+      setValue('visited_expo', studentData.visited_expo)
+    }
+  },[studentData ,watch, setValue])
+
+  const handleCheckboxChange = () => {
+    const isVisited = !watch('visited_expo')
+    setValue('visited_expo', isVisited)
+  }
+
+  const onSave = async () => {
+    setLoadingSave(true)
+    try {
+       await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/student/${data.u_id}`,
+        {
+          visited_expo: watch('visited_expo')
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      )
+     
+      toast.success('Data saved successfully!')
+    } catch (error) {
+      console.log('Error updating student data:', error)
+      toast.error('Error updating student data:', error)
+    } finally {
+      setLoadingSave(false)
+    }
+  }
 
   return (
     <div className='student-info'>
@@ -22,7 +72,7 @@ const StudentView = ({ studentData }) => {
           </p>
 
           <p className='info-item font-bold'>
-            Qualification: <span className='font-semibold'>{studentData.qualification}</span>
+            Qualification: <span className='font-semibold capitalize'>{studentData.qualification}</span>
           </p>
         </fieldset>
       </div>
@@ -61,19 +111,39 @@ const StudentView = ({ studentData }) => {
             </ul>
           </div>
 
-          {/* <div className='countries-list'>
-            <h3 className='font-bold'>Other Service:</h3>
-            <ul className='sub-list'>
-              {studentData.service.map((service, index) => (
-                <li key={service.u_id} className='font-bold list'>
-                  {service.name}
-                  {index !== studentData.student_countries.length - 1 && ','}
-                </li>
-              ))}
-            </ul>
-          </div> */}
+          
+          <div className='flex flex-row items-center space-x-4'>
+                    <input
+                      type='checkbox'
+                      id='visited_expo'
+                      defaultChecked={studentData.visited_expo}
+                      {...register('visited_expo')}
+                      checked={watch('visited_expo')}
+                      className={`checkbox-icon ${studentData.visited_expo && 'disabled'}   `}
+                      onChange={() => {
+                        handleButtonShow()
+                        handleCheckboxChange()
+                      }}
+                    />
+                    <label htmlFor='visited_expo' className='ml-2 font-bold'>
+                      Visited Expo
+                    </label>
+                    {show && (
+                      <Button
+                        type='button'
+                        onClick={onSave}
+                        className=' text-white font-bold py-2 px-4 rounded'
+                        disabled={loadingSave}
+                      >
+                        {loadingSave ? 'Saving...' : 'Save'}
+                      </Button>
+                    )}
+                  </div>
+
+         
         </fieldset>
       </div>
+      <ToastContainer />
     </div>
   )
 }
