@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
 import axios from 'axios'
 import { MdError } from 'react-icons/md'
+import { ToastContainer, toast } from 'react-toastify'
 
 const UpdateForm = ({ rowData }) => {
   const {
@@ -25,6 +26,7 @@ const UpdateForm = ({ rowData }) => {
       }
     } catch (error) {
       console.log('Error updating user data:', error)
+      toast.error('Error updating user data:', error)
     }
   }
 
@@ -100,6 +102,7 @@ const UpdateForm = ({ rowData }) => {
       </div>
 
       <Button type='submit'>Save</Button>
+      <ToastContainer />
     </form>
   )
 }
